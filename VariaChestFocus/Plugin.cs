@@ -27,7 +27,7 @@ namespace VariaChestFocus
     {
         public const string PluginGuid = "com.varia.chestfocus";
         public const string PluginName = "VariaChestFocus";
-        public const string PluginVersion = "0.1.16";
+        public const string PluginVersion = "0.1.17";
 
         private static readonly ConfigSync ConfigSync = new(PluginGuid)
         {

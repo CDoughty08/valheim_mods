@@ -1,6 +1,6 @@
 {
   "name": "VariaTracking",
-  "version_number": "0.1.1",
+  "version_number": "0.1.2",
   "website_url": "",
   "description": "Tracking skill with woodcraft progression: widening cone, unlock ladder, trophy names, crouch range bonus. Optional ServerSync.",
   "dependencies": [

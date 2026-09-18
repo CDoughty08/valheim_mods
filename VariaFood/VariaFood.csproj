@@ -9,9 +9,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaFood</AssemblyName>
     <RootNamespace>VariaFood</RootNamespace>
-    <Version>0.1.3</Version>
+    <Version>0.1.4</Version>
     <VariaModName>VariaFood</VariaModName>
-    <VariaIcon>$(MSBuildProjectDirectory)\icon.png</VariaIcon>
+    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\food_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>
     <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
     <GALE_PROFILE Condition="'$(GALE_PROFILE)' == ''">$(APPDATA)\com.kesomannen.gale\valheim\profiles\Default</GALE_PROFILE>
@@ -75,7 +75,7 @@
   <ItemGroup>
     <None Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\assets\food_icon_256.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

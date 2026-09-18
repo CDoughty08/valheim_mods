@@ -1,6 +1,6 @@
 {
   "name": "VariaWeight",
-  "version_number": "0.0.4",
+  "version_number": "0.0.5",
   "website_url": "",
   "description": "Weightlifting skill: gain XP while moving with a load; more weight = more XP. Optional ServerSync. F1 config supported.",
   "dependencies": [

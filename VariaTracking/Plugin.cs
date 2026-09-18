@@ -79,7 +79,7 @@ namespace VariaTracking
     {
         public const string PluginGuid = "com.varia.tracking";
         public const string PluginName = "VariaTracking";
-        public const string PluginVersion = "0.1.1";
+        public const string PluginVersion = "0.1.2";
 
         /// <summary>Stable skill id — do not change after release (save data keys off SkillType hash).</summary>
         public const string SkillIdentifier = "com.varia.tracking.tracking";

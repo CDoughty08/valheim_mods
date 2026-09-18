@@ -9,9 +9,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaChestFocus</AssemblyName>
     <RootNamespace>VariaChestFocus</RootNamespace>
-    <Version>0.1.16</Version>
+    <Version>0.1.17</Version>
     <VariaModName>VariaChestFocus</VariaModName>
-    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\chestfocus_icon.png</VariaIcon>
+    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\chestfocus_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>
     <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
     <GALE_PROFILE Condition="'$(GALE_PROFILE)' == ''">$(APPDATA)\com.kesomannen.gale\valheim\profiles\Default</GALE_PROFILE>
@@ -78,7 +78,7 @@
   <ItemGroup>
     <None Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\assets\chestfocus_icon.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\assets\chestfocus_icon_256.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="..\assets\chestfocus_icon.png">
       <LogicalName>VariaChestFocus.Assets.chestfocus_icon.png</LogicalName>

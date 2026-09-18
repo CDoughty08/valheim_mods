@@ -1,6 +1,6 @@
 {
   "name": "VariaChestFocus",
-  "version_number": "0.1.16",
+  "version_number": "0.1.17",
   "website_url": "",
   "description": "Per-chest allowlists (categories + item browser), copy/paste settings, and priority-aware quick-sort into nearby chests.",
   "dependencies": [

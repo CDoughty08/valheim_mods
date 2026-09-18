@@ -9,9 +9,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaWeight</AssemblyName>
     <RootNamespace>VariaWeight</RootNamespace>
-    <Version>0.0.4</Version>
+    <Version>0.0.5</Version>
     <VariaModName>VariaWeight</VariaModName>
-    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\weightlifting_icon.png</VariaIcon>
+    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\weightlifting_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>
     <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
     <GALE_PROFILE Condition="'$(GALE_PROFILE)' == ''">$(APPDATA)\com.kesomannen.gale\valheim\profiles\Default</GALE_PROFILE>
@@ -64,7 +64,7 @@
   <ItemGroup>
     <None Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="icon.png" Condition="Exists('icon.png')" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\assets\weightlifting_icon_256.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="..\assets\weightlifting_icon.png">
       <LogicalName>VariaWeight.Assets.weightlifting_icon.png</LogicalName>

@@ -9,9 +9,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaTracking</AssemblyName>
     <RootNamespace>VariaTracking</RootNamespace>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <VariaModName>VariaTracking</VariaModName>
-    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\tracking_icon.png</VariaIcon>
+    <VariaIcon>$(MSBuildProjectDirectory)\..\assets\tracking_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>
     <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
     <GALE_PROFILE Condition="'$(GALE_PROFILE)' == ''">$(APPDATA)\com.kesomannen.gale\valheim\profiles\Default</GALE_PROFILE>
@@ -76,7 +76,7 @@
   <ItemGroup>
     <None Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\assets\tracking_icon.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\assets\tracking_icon_256.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="..\assets\tracking_icon.png">
       <LogicalName>VariaTracking.Assets.tracking_icon.png</LogicalName>
