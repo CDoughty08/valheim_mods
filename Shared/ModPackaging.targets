@@ -1,0 +1,36 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep the old Tracking switch as an alias. Debug builds never auto-deploy. -->
+    <DeployMod Condition="'$(DeployMod)' == '' and '$(DeployToGaleOnBuild)' == 'false'">false</DeployMod>
+    <DeployMod Condition="'$(DeployMod)' == ''">true</DeployMod>
+    <PackMod Condition="'$(PackMod)' == ''">true</PackMod>
+  </PropertyGroup>
+  <Target Name="DeployToGale" AfterTargets="ILRepacker"
+          Condition="'$(Configuration)' == 'Release' and '$(DeployMod)' == 'true' and Exists('$(GALE_PROFILE)\BepInEx\plugins')">
+    <MakeDir Directories="$(MOD_DEPLOYPATH)" />
+    <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\manifest.json;$(MSBuildProjectDirectory)\README.md;$(MSBuildProjectDirectory)\..\LICENSE"
+          DestinationFolder="$(MOD_DEPLOYPATH)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(VariaIcon)" DestinationFiles="$(MOD_DEPLOYPATH)\icon.png" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Deployed $(VariaPackageFolder) to $(MOD_DEPLOYPATH)" />
+  </Target>
+  <Target Name="PackGaleZip" AfterTargets="ILRepacker"
+          Condition="'$(Configuration)' == 'Release' and '$(PackMod)' == 'true'">
+    <PropertyGroup>
+      <!-- Stage outside OneDrive, whose file filter can lock freshly copied icons.
+           Unique staging prevents stale files and concurrent builds mixing packages. -->
+      <_VariaPackRoot>$([System.IO.Path]::Combine($([System.IO.Path]::GetTempPath()), 'Varia-packages\'))</_VariaPackRoot>
+      <_VariaPackStage>$(_VariaPackRoot)$([System.Guid]::NewGuid())</_VariaPackStage>
+      <_VariaResolvedStage>$([System.IO.Path]::GetFullPath('$(_VariaPackStage)'))</_VariaResolvedStage>
+      <_VariaZip>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(VariaAuthor)-$(VariaModName)-$(Version).zip</_VariaZip>
+    </PropertyGroup>
+    <Error Condition="!$([System.String]::Copy('$(_VariaResolvedStage)').StartsWith('$(_VariaPackRoot)'))"
+           Text="Package staging must stay inside the temporary Varia-packages directory." />
+    <MakeDir Directories="$(_VariaPackStage)" />
+    <Copy SourceFiles="$(TargetPath);$(MSBuildProjectDirectory)\manifest.json;$(MSBuildProjectDirectory)\README.md;$(MSBuildProjectDirectory)\..\LICENSE"
+          DestinationFolder="$(_VariaPackStage)" />
+    <Copy SourceFiles="$(VariaIcon)" DestinationFiles="$(_VariaPackStage)\icon.png" />
+    <ZipDirectory SourceDirectory="$(_VariaPackStage)" DestinationFile="$(_VariaZip)" Overwrite="true" />
+    <RemoveDir Directories="$(_VariaResolvedStage)" />
+    <Message Importance="high" Text="Package: $(_VariaZip)" />
+  </Target>
+</Project>

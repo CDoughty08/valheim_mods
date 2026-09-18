@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../VariaFood/Patches/HudFoodSlotPatches.cs" Link="Production/HudFoodSlotPatches.cs" />
+    <Compile Include="../../VariaFood/DrinkDisplay.cs" Link="Production/DrinkDisplay.cs" />
+    <PackageReference Include="HarmonyX" Version="2.10.2" />
+    <Compile Include="../../VariaFood/FoodConfig.cs" Link="Production/FoodConfig.cs" />
+    <Compile Include="../../VariaFood/FoodMath.cs" Link="Production/FoodMath.cs" />
+    <Compile Include="../../VariaFood/FoodSlots.cs" Link="Production/FoodSlots.cs" />
+    <Compile Include="../../VariaFood/FoodHudLayout.cs" Link="Production/FoodHudLayout.cs" />
+    <Compile Include="../../VariaFood/DrinkClassifier.cs" Link="Production/DrinkClassifier.cs" />
+    <Compile Include="../../VariaFood/Patches/FoodPatches.cs" Link="Production/FoodPatches.cs" />
+    <Compile Include="../../VariaFood/Patches/PlayerFoodLoadPatch.cs" Link="Production/PlayerFoodLoadPatch.cs" />
+    <Compile Include="../../VariaFood/Patches/TooltipPatches.cs" Link="Production/TooltipPatches.cs" />
+  </ItemGroup>
+</Project>

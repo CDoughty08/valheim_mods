@@ -1,0 +1,101 @@
+# --- Build / .NET ---
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.dll
+!Shared/ServerSync/ServerSync.dll
+*.exe
+*.pdb
+*.mdb
+*.cache
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# MSBuild / test
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+*.DotSettings.user
+
+# --- IDE / OS ---
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+!.vscode/tasks.json
+!.vscode/build-active-mod.ps1
+.idea/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.rsuser
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Local machine overrides (copy from *.example) ---
+**/Environment.props
+!**/Environment.props.example
+
+# --- Valheim / decompile / reverse engineering ---
+# Never commit game assemblies or decompiled Iron Gate source.
+_decompile/
+**/_decompile/
+**/decompiled/
+**/*.decompiled.cs
+**/publicized/
+*.md5
+
+# Game / Steam leftovers if someone copies them in
+Valheim_Data/
+assembly_valheim.dll
+assembly_utils.dll
+UnityEngine*.dll
+
+# --- Mod packaging / deploy artifacts ---
+*.zip
+
+# Full-res art sources (Thunderstore icon.png must stay 256x256)
+**/icon.source.png
+
+# --- Runtime / local secrets ---
+*.cfg
+.env
+.env.*
+*.pem
+*.key

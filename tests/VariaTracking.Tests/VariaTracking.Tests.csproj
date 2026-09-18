@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Shared/MovementExperience.cs" Link="Production/MovementExperience.cs" />
+    <Compile Include="../../VariaTracking/CreatureClassifier.cs" Link="Production/CreatureClassifier.cs" />
+    <Compile Include="../../VariaTracking/TrackingDisplay.cs" Link="Production/TrackingDisplay.cs" />
+    <Compile Include="../../VariaTracking/TrackingTargets.cs" Link="Production/TrackingTargets.cs" />
+    <Compile Include="../../VariaTracking/TrackingExperience.cs" Link="Production/TrackingExperience.cs" />
+    <Compile Include="../../VariaTracking/TrackingGeometry.cs" Link="Production/TrackingGeometry.cs" />
+    <Compile Include="../../VariaTracking/TrackingKnowledge.cs" Link="Production/TrackingKnowledge.cs" />
+    <Compile Include="../../VariaTracking/TrackingTrophyKnowledge.cs" Link="Production/TrackingTrophyKnowledge.cs" />
+  </ItemGroup>
+</Project>

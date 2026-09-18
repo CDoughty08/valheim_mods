@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../VariaChestFocus/PaintMemoryBudget.cs" Link="Production/PaintMemoryBudget.cs" />
+    <PackageReference Include="HarmonyX" Version="2.10.2" />
+    <Compile Include="../../VariaChestFocus/Enums.cs" Link="Production/Enums.cs" />
+    <Compile Include="../../VariaChestFocus/ChestSettings.cs" Link="Production/ChestSettings.cs" />
+    <Compile Include="../../VariaChestFocus/ChestPalette.cs" Link="Production/ChestPalette.cs" />
+    <Compile Include="../../VariaChestFocus/ChestDyeMath.cs" Link="Production/ChestDyeMath.cs" />
+    <Compile Include="../../VariaChestFocus/ChestPaintProfile.cs" Link="Production/ChestPaintProfile.cs" />
+    <Compile Include="../../VariaChestFocus/ChestTintMaterial.cs" Link="Production/ChestTintMaterial.cs" />
+    <Compile Include="../../VariaChestFocus/ChestDebrisTint.cs" Link="Production/ChestDebrisTint.cs" />
+    <Compile Include="../../VariaChestFocus/ChestSettingsStore.cs" Link="Production/ChestSettingsStore.cs" />
+    <Compile Include="../../VariaChestFocus/ChestHover.cs" Link="Production/ChestHover.cs" />
+    <Compile Include="../../VariaChestFocus/CategoryDefs.cs" Link="Production/CategoryDefs.cs" />
+    <Compile Include="../../VariaChestFocus/ItemCatalog.cs" Link="Production/ItemCatalog.cs" />
+    <Compile Include="../../VariaChestFocus/ItemUtil.cs" Link="Production/ItemUtil.cs" />
+    <Compile Include="../../VariaChestFocus/ContainerRegistry.cs" Link="Production/ContainerRegistry.cs" />
+    <Compile Include="../../VariaChestFocus/QuickSort.cs" Link="Production/QuickSort.cs" />
+    <Compile Include="../../VariaChestFocus/FilterPatches.cs" Link="Production/FilterPatches.cs" />
+    <Compile Include="../../VariaChestFocus/EpiCompat.cs" Link="Production/EpiCompat.cs" />
+  </ItemGroup>
+</Project>

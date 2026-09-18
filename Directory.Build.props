@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- Shared paths for all Varia Valheim mods (Gale + Steam game assemblies). -->
+  <PropertyGroup>
+    <VariaAuthor>Varia</VariaAuthor>
+    <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
+    <GALE_PROFILE Condition="'$(GALE_PROFILE)' == ''">$(APPDATA)\com.kesomannen.gale\valheim\profiles\Default</GALE_PROFILE>
+    <GALE_PLUGINS>$(GALE_PROFILE)\BepInEx\plugins</GALE_PLUGINS>
+    <!-- Point ILRepack.Lib.MSBuild.Task at shared ServerSync merge (not the package default merge-all). -->
+    <ILRepackTargetsFile>$(MSBuildThisFileDirectory)Shared\ServerSync\ILRepack.targets</ILRepackTargetsFile>
+  </PropertyGroup>
+</Project>

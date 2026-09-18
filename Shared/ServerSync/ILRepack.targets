@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imported by ILRepack.Lib.MSBuild.Task via $(ILRepackTargetsFile).
+  Target must NOT be named ILRepack — the package defines a conditioned ILRepack
+  target that would merge with ours and skip (Azumatt uses ILRepacker).
+  Merges blaxxun ServerSync v1.20 only.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="ILRepacker" AfterTargets="Build">
+    <Error Text="ServerSync.dll missing from output (expected at $(TargetDir)ServerSync.dll). Ensure the ServerSync reference has Private=true."
+           Condition="!Exists('$(TargetDir)ServerSync.dll')" />
+    <PropertyGroup>
+      <_ServerSyncLibPath>$(TargetDir);$(VALHEIM_INSTALL)\Valheim_Data\Managed;$(GALE_PROFILE)\BepInEx\core</_ServerSyncLibPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <_ILRepackInput Include="$(TargetPath)" />
+      <_ILRepackInput Include="$(TargetDir)ServerSync.dll" />
+    </ItemGroup>
+    <ILRepack
+      Parallel="true"
+      DebugInfo="true"
+      Internalize="true"
+      InputAssemblies="@(_ILRepackInput)"
+      OutputFile="$(TargetPath)"
+      TargetKind="SameAsPrimaryAssembly"
+      LibraryPath="$(_ServerSyncLibPath)" />
+    <Delete Files="$(TargetDir)ServerSync.dll" />
+    <Message Importance="high" Text="ILRepacked ServerSync v1.20 into $(TargetFileName)" />
+  </Target>
+</Project>
