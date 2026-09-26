@@ -23,6 +23,8 @@
     <Compile Include="../../VariaChestFocus/ItemUtil.cs" Link="Production/ItemUtil.cs" />
     <Compile Include="../../VariaChestFocus/ContainerRegistry.cs" Link="Production/ContainerRegistry.cs" />
     <Compile Include="../../VariaChestFocus/QuickSort.cs" Link="Production/QuickSort.cs" />
+    <Compile Include="../../VariaChestFocus/ContainerAccess.cs" Link="Production/ContainerAccess.cs" />
+    <Compile Include="../../VariaChestFocus/ContainerSort.cs" Link="Production/ContainerSort.cs" />
     <Compile Include="../../VariaChestFocus/FilterPatches.cs" Link="Production/FilterPatches.cs" />
     <Compile Include="../../VariaChestFocus/EpiCompat.cs" Link="Production/EpiCompat.cs" />
   </ItemGroup>

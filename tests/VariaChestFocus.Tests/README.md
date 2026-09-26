@@ -129,3 +129,27 @@ modal, controller/keyboard slider adjustments and navigation work, and scaling k
 all controls visible. Run alongside the palette multiplayer and reload checks above.
 
 Version 0.1.16 adds checks for tombstone exclusion and mip-inclusive paint memory accounting. In game, lower Appearance → MaxPaintTextureMiB, add distinct colors and check the dye fallback; existing painted debris must stay valid. Destroy/unload the plugin with the settings/color panel open and confirm its controls disappear without saving.
+
+Sorting 0.1.18: automated checks cover in-place grid ordering and metadata preservation,
+live dimensions and overfull inventories, closed-chest transfers, filtered/priority/distance
+ordering, stable equal-priority contents, excluded items, catch-all storage, partial overflow,
+both-side access guards, range/chest/move caps, both-side batched saves and exception recovery.
+The installed-game metadata check also verifies the inventory change callback, dimension
+methods, and the drag-item field used by the button. These checks use inventory doubles;
+they do not execute native inventory serialization or the UI.
+
+In game, check **Sort** appears immediately left of the Chest Focus icon at small/large
+UI scales and with AzuContainerSizes. Sort a full chest containing equipment, partial stacks,
+modded item data and items excluded by a changed filter; only positions should change.
+Repeat on a Never chest, then reload and verify positions persist. Check disabled state
+while dragging or editing settings, ownership/access loss, mod disable, and plugin unload.
+
+With every chest closed, press **Left Shift + H** beside an unrestricted drop-off chest,
+a Low filtered chest, a High matching chest, and a Never chest. Check filtered storage
+fills first, overflow stays in its source, Never is untouched, and player inventory does
+not change. Repeat after walking to the opposite side: equal-priority contents should
+stay put. Change filters, try nearly full destinations and a reduced move/chest cap, then
+save/reload both inventories. Repeat with another client holding a chest open or owning
+it, and with wards/private storage. Verify plain H still stores player inventory, each
+custom keybind triggers only its configured action (chest sorting wins identical binds),
+and neither key runs while inventory/settings, menus, chat or console capture input.

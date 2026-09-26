@@ -9,6 +9,7 @@ namespace VariaChestFocus
     {
         private static readonly List<Dest> DestScratch = new List<Dest>(64);
         private static readonly List<ItemDrop.ItemData> ItemScratch = new List<ItemDrop.ItemData>(64);
+        private static readonly List<ChestItem> ChestItemScratch = new List<ChestItem>(256);
         private static readonly HashSet<Container> DirtyContainers = new HashSet<Container>();
         private static bool _running;
 
@@ -30,13 +31,29 @@ namespace VariaChestFocus
             public bool Filtered;
         }
 
+        private struct ChestItem
+        {
+            public Dest Source;
+            public ItemDrop.ItemData Item;
+        }
+
         internal static int Run(Player player, in ChestFocusConfigSnapshot cfg)
+        {
+            return Execute(player, cfg, betweenChests: false);
+        }
+
+        internal static int RunChests(Player player, in ChestFocusConfigSnapshot cfg)
+        {
+            return Execute(player, cfg, betweenChests: true);
+        }
+
+        private static int Execute(Player player, in ChestFocusConfigSnapshot cfg, bool betweenChests)
         {
             if (_running) return 0;
             _running = true;
             try
             {
-                return RunCore(player, cfg);
+                return RunCore(player, cfg, betweenChests);
             }
             finally
             {
@@ -55,7 +72,7 @@ namespace VariaChestFocus
                             catch (Exception error)
                             {
                                 // One failed serialization must not discard the pending saves
-                                // for every other chest that already received player items.
+                                // for every other chest that already sent or received items.
                                 VariaChestFocusPlugin.Log?.LogWarning("Chest Focus: cannot save sorted chest: " + error);
                                 if (saveFailure == null) saveFailure = ExceptionDispatchInfo.Capture(error);
                             }
@@ -68,13 +85,14 @@ namespace VariaChestFocus
                     DirtyContainers.Clear();
                     DestScratch.Clear();
                     ItemScratch.Clear();
+                    ChestItemScratch.Clear();
                     ContainerRegistry.ClearNearby();
                     _running = false;
                 }
             }
         }
 
-        private static int RunCore(Player player, in ChestFocusConfigSnapshot cfg)
+        private static int RunCore(Player player, in ChestFocusConfigSnapshot cfg, bool betweenChests)
         {
             if (player == null || !cfg.Enabled)
             {
@@ -82,7 +100,7 @@ namespace VariaChestFocus
             }
 
             Inventory playerInv = player.GetInventory();
-            if (playerInv == null)
+            if (!betweenChests && playerInv == null)
             {
                 return 0;
             }
@@ -93,24 +111,10 @@ namespace VariaChestFocus
             List<Container> nearby = ContainerRegistry.GetNearby(pos, cfg.SortRange);
             DestScratch.Clear();
 
-            long playerId = Game.instance != null ? Game.instance.GetPlayerProfile().GetPlayerID() : 0L;
-
             for (int i = 0; i < nearby.Count; i++)
             {
                 Container container = nearby[i];
-                if (container == null || container.IsInUse())
-                {
-                    continue;
-                }
-
-                if (!container.CheckAccess(playerId)
-                    || container.m_checkGuardStone && !PrivateArea.CheckAccess(container.transform.position, 0f, flash: false))
-                {
-                    continue;
-                }
-
-                ZNetView nview = container.m_nview;
-                if (nview == null || !nview.IsValid() || !nview.IsOwner())
+                if (!ContainerAccess.CanModify(player, container))
                 {
                     continue;
                 }
@@ -154,6 +158,8 @@ namespace VariaChestFocus
                 dest.Inventory = dest.Container.GetInventory();
                 DestScratch[i] = dest;
             }
+
+            if (betweenChests) return MoveChestItems(player, cfg);
 
             ItemScratch.Clear();
             List<ItemDrop.ItemData> all = playerInv.GetAllItems();
@@ -221,7 +227,57 @@ namespace VariaChestFocus
             return moves;
         }
 
+        private static int MoveChestItems(Player player, in ChestFocusConfigSnapshot cfg)
+        {
+            // Snapshot every source before any move. An item arriving in another chest
+            // must not become new work during the same press.
+            foreach (Dest source in DestScratch)
+            {
+                if (source.Inventory == null) continue;
+                foreach (ItemDrop.ItemData item in source.Inventory.GetAllItems())
+                    if (item != null) ChestItemScratch.Add(new ChestItem { Source = source, Item = item });
+            }
+
+            int moves = 0;
+            int maxMoves = Mathf.Max(1, cfg.MaxMoves);
+            foreach (ChestItem entry in ChestItemScratch)
+            {
+                if (moves >= maxMoves) break;
+                Dest source = entry.Source;
+                ItemDrop.ItemData item = entry.Item;
+                if (item.m_stack <= 0 || !source.Inventory.ContainsItem(item)
+                    || !ContainerAccess.CanModify(player, source.Container)) continue;
+
+                bool belongsHere = source.Settings.Allows(item);
+                foreach (Dest dest in DestScratch)
+                {
+                    if (moves >= maxMoves) break;
+                    if (dest.Inventory == null || dest.Inventory == source.Inventory
+                        || !dest.Settings.Allows(item)
+                        || belongsHere && CompareRank(dest, source) >= 0
+                        || !ContainerAccess.CanModify(player, dest.Container)
+                        || !dest.Inventory.CanAddItem(item, 1)) continue;
+
+                    int before = item.m_stack;
+                    dest.Inventory.MoveItemToThis(source.Inventory, item);
+                    if (!source.Inventory.ContainsItem(item) || item.m_stack < before)
+                    {
+                        moves++;
+                        // Both inventories issue change callbacks; both chests must be saved.
+                        if (!source.Inventory.ContainsItem(item) || item.m_stack <= 0) break;
+                    }
+                }
+            }
+            return moves;
+        }
+
         private static int CompareDest(Dest a, Dest b)
+        {
+            int rank = CompareRank(a, b);
+            return rank != 0 ? rank : a.DistSq.CompareTo(b.DistSq);
+        }
+
+        private static int CompareRank(Dest a, Dest b)
         {
             // Dedicated storage always precedes catch-all storage, regardless of priority.
             if (a.Filtered != b.Filtered)
@@ -229,13 +285,9 @@ namespace VariaChestFocus
                 return a.Filtered ? -1 : 1;
             }
 
-            int p = ((int)b.Settings.Priority).CompareTo((int)a.Settings.Priority);
-            if (p != 0)
-            {
-                return p;
-            }
-
-            return a.DistSq.CompareTo(b.DistSq);
+            // Distance chooses a destination, but is never a reason to empty an
+            // equally suitable source chest when the player moves around the base.
+            return ((int)b.Settings.Priority).CompareTo((int)a.Settings.Priority);
         }
     }
 }

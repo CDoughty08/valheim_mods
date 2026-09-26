@@ -52,6 +52,7 @@ public class ItemDrop
         public int m_stack = 1, m_quality = 1;
         public bool m_equipped;
         public Vector2i m_gridPos;
+        public readonly Dictionary<string, string> m_customData = new();
         public ItemData Clone() => (ItemData)MemberwiseClone();
     }
 }
@@ -111,8 +112,11 @@ public class Inventory
     public readonly List<ItemDrop.ItemData> Items = new();
     public Container Owner;
     public int Capacity = 100;
+    public int Width = 8, Height = 4;
     public bool ThrowOnMove;
     public List<ItemDrop.ItemData> GetAllItems() => Items;
+    public int GetWidth() => Width;
+    public int GetHeight() => Height;
     public bool ContainsItem(ItemDrop.ItemData item) => Items.Contains(item);
     public ItemDrop.ItemData GetItemAt(int x, int y) => Items.FirstOrDefault(i => i.m_gridPos.x == x && i.m_gridPos.y == y);
     public bool CanAddItem(ItemDrop.ItemData item, int amount) => !FilterLogic.ShouldBlock(this, item)
@@ -133,11 +137,12 @@ public class Inventory
         if (FilterLogic.ShouldBlock(this, item)) return;
         if (AddItem(item)) fromInventory.Items.Remove(item);
         Changed();
+        fromInventory.Changed();
     }
     public bool MoveItemToThis(Inventory fromInventory, ItemDrop.ItemData item, int amount, int x, int y) => throw new NotSupportedException();
     public int StackAll(Inventory fromInventory, bool message = false) => throw new NotSupportedException();
     public void MoveAll(Inventory fromInventory) => throw new NotSupportedException();
-    private void Changed()
+    public void Changed(bool success = false, bool cheatedStateChanged = false)
     {
         if (Owner != null && !QuickSort.DeferSave(Owner) && !Owner.m_loading && Owner.IsOwner()) Owner.Save();
     }

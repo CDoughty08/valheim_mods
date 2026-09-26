@@ -656,6 +656,7 @@ Check("hover respects disabled mod, access restrictions and unsupported containe
     VariaChestFocusPlugin.IsModEnabled = false;
     try { Unchanged(); } finally { VariaChestFocusPlugin.IsModEnabled = true; }
 });
+SortingChecks.Run(Check);
 VisualLifetimeChecks.Run(Check);
 if (args.Length > 0)
 {
@@ -692,6 +693,11 @@ if (args.Length > 0)
         var inventory = game.MainModule.Types.Single(t => t.Name == "Inventory");
         Assert(inventory.Methods.Any(m => m.Name == "MoveItemToThis" && m.Parameters.Count == 2));
         Assert(inventory.Methods.Any(m => m.Name == "MoveItemToThis" && m.Parameters.Count == 5));
+        Assert(inventory.Methods.Any(m => m.Name == "Changed" && m.Parameters.Count == 2
+            && m.Parameters.All(p => p.IsOptional && p.ParameterType.FullName == "System.Boolean")));
+        foreach (string name in new[] { "GetWidth", "GetHeight" })
+            Assert(inventory.Methods.Any(m => m.Name == name && m.Parameters.Count == 0));
+        Assert(game.MainModule.Types.Single(t => t.Name == "InventoryGui").Fields.Any(f => f.Name == "m_dragItem"));
     });
 }
 if (args.Length > 1)

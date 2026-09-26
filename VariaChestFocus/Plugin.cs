@@ -27,7 +27,7 @@ namespace VariaChestFocus
     {
         public const string PluginGuid = "com.varia.chestfocus";
         public const string PluginName = "VariaChestFocus";
-        public const string PluginVersion = "0.1.17";
+        public const string PluginVersion = "0.1.18";
 
         private static readonly ConfigSync ConfigSync = new(PluginGuid)
         {
@@ -47,6 +47,7 @@ namespace VariaChestFocus
         internal static ConfigEntry<int> MaxMoves;
         internal static ConfigEntry<int> MaxPaintTextureMiB;
         internal static ConfigEntry<KeyboardShortcut> SortKeybind;
+        internal static ConfigEntry<KeyboardShortcut> ChestSortKeybind;
 
         private Harmony _harmony;
         private static ChestFocusConfigSnapshot _snapshot;
@@ -129,6 +130,12 @@ namespace VariaChestFocus
                 new KeyboardShortcut(KeyCode.H),
                 "Key to quick-sort inventory into nearby focused chests. [Not Synced with Server]");
 
+            ChestSortKeybind = Config.Bind(
+                "QuickSort",
+                "ChestSortKeybind",
+                new KeyboardShortcut(KeyCode.H, KeyCode.LeftShift),
+                "Key to sort nearby chests into better matching or higher-priority chests. Equally suitable chests keep their items. Never chests are excluded as sources and destinations. [Not Synced with Server]");
+
             var keyMigrated = Config.Bind("Migration", "SortKeyUpdated", false,
                 "Tracks the one-time migration from the old G default to H. [Not Synced with Server]");
             if (!keyMigrated.Value)
@@ -154,7 +161,9 @@ namespace VariaChestFocus
                 return;
             }
 
-            if (SortKeybind == null || !SortKeybind.Value.IsDown())
+            // Resolve the chest action first so overlapping custom binds cannot run both.
+            bool sortChests = ChestSortKeybind != null && ChestSortKeybind.Value.IsDown();
+            if (!sortChests && (SortKeybind == null || !SortKeybind.Value.IsDown()))
             {
                 return;
             }
@@ -175,10 +184,12 @@ namespace VariaChestFocus
                 return;
             }
 
-            int moves = QuickSort.Run(player, cfg);
+            int moves = sortChests ? QuickSort.RunChests(player, cfg) : QuickSort.Run(player, cfg);
             player.Message(
                 MessageHud.MessageType.TopLeft,
-                moves > 0
+                sortChests
+                    ? (moves > 0 ? $"Chest Focus: moved {moves} stack(s) between chests" : "Chest Focus: nothing to move between chests")
+                    : moves > 0
                     ? $"Chest Focus: stored {moves} stack(s)"
                     : "Chest Focus: nothing to store");
         }

@@ -9,14 +9,16 @@ namespace VariaChestFocus.Gui
     internal static class ChestSettingsUi
     {
         private const string ButtonName = "VariaChestFocus_Settings";
+        private const string SortButtonName = "VariaChestFocus_Sort";
         private const string PanelName = "VariaChestFocus_Panel";
         private const string LegacyButtonName = "VariaChestFocus_Button";
         private const int PageSize = 24;
-        private const int LayoutVersion = 9;
+        private const int LayoutVersion = 10;
         private static readonly ChestPriority[] Priorities = (ChestPriority[])System.Enum.GetValues(typeof(ChestPriority));
 
         private static InventoryGui _gui;
         private static Button _focusButton;
+        private static Button _sortButton;
         private static GameObject _panel;
         private static Button _priorityButton;
         private static TextMeshProUGUI _pageLabel;
@@ -82,26 +84,30 @@ namespace VariaChestFocus.Gui
                 return;
             }
 
-            if (_built && _builtLayoutVersion == LayoutVersion && _focusButton != null && _panel != null)
+            if (_built && _builtLayoutVersion == LayoutVersion && _focusButton != null && _sortButton != null && _panel != null)
             {
                 return;
             }
 
             // Rebuild cleanly if a prior attempt left orphans (including legacy Focus button).
             DestroyNamed(gui.m_container, ButtonName);
+            DestroyNamed(gui.m_container, SortButtonName);
             DestroyNamed(gui.m_container, LegacyButtonName);
             Transform stackParent = gui.m_stackAllButton != null ? gui.m_stackAllButton.transform.parent : null;
             DestroyNamed(stackParent, ButtonName);
+            DestroyNamed(stackParent, SortButtonName);
             DestroyNamed(stackParent, LegacyButtonName);
             DestroyNamed(gui.transform, PanelName);
             DestroyNamed(gui.m_crafting, PanelName);
             _focusButton = null;
+            _sortButton = null;
             _panel = null;
             _built = false;
 
             BuildSettingsButton(gui);
+            BuildSortButton();
             BuildPanel(gui);
-            _built = _focusButton != null && _panel != null;
+            _built = _focusButton != null && _sortButton != null && _panel != null;
             _builtLayoutVersion = _built ? LayoutVersion : 0;
             SetButtonVisible(false);
             if (_panel != null)
@@ -122,6 +128,12 @@ namespace VariaChestFocus.Gui
             Container container = gui != null ? gui.m_currentContainer : null;
             bool show = container != null && container.m_rootObjectOverride == null && VariaChestFocusPlugin.IsModEnabled;
             SetButtonVisible(show);
+            if (_sortButton != null)
+            {
+                _sortButton.interactable = show && gui.m_dragItem == null
+                    && (_panel == null || !_panel.activeSelf)
+                    && ContainerAccess.CanModify(Player.m_localPlayer, container, allowInUse: true);
+            }
 
             if (!show)
             {
@@ -170,8 +182,9 @@ namespace VariaChestFocus.Gui
         {
             HidePanel(persist: false);
             if (_focusButton != null) { _focusButton.gameObject.SetActive(false); Object.Destroy(_focusButton.gameObject); }
+            if (_sortButton != null) { _sortButton.gameObject.SetActive(false); Object.Destroy(_sortButton.gameObject); }
             if (_panel != null) { _panel.SetActive(false); Object.Destroy(_panel); }
-            _gui = null; _focusButton = null; _panel = null; _priorityButton = null;
+            _gui = null; _focusButton = null; _sortButton = null; _panel = null; _priorityButton = null;
             _pageLabel = null; _search = null; _colorLabel = null; _colorPicker = null;
             _customColorButton = null; _categoryRoot = null; _itemRoot = null; _summary = null;
             _emptyLabel = null; _previousPage = null; _nextPage = null; _clearDialog = null;
@@ -203,6 +216,40 @@ namespace VariaChestFocus.Gui
             {
                 _focusButton.gameObject.SetActive(visible);
             }
+            if (_sortButton != null) _sortButton.gameObject.SetActive(visible);
+        }
+
+        private static void BuildSortButton()
+        {
+            if (_focusButton == null) return;
+            RectTransform focus = (RectTransform)_focusButton.transform;
+            _sortButton = UiFactory.CloneButton(SortButtonName, focus.parent, "Sort",
+                new Vector2(52f, focus.sizeDelta.y), SortOpenContainer);
+            if (_sortButton == null) return;
+            RectTransform rt = (RectTransform)_sortButton.transform;
+            rt.anchorMin = focus.anchorMin;
+            rt.anchorMax = focus.anchorMax;
+            rt.pivot = focus.pivot;
+            rt.anchoredPosition = focus.anchoredPosition - new Vector2(focus.sizeDelta.x + 6f, 0f);
+            TMP_Text label = _sortButton.GetComponentInChildren<TMP_Text>(true);
+            if (label != null) label.fontSize = 14f;
+            UITooltip tooltip = UiFactory.AddTooltip(_sortButton.gameObject);
+            if (tooltip != null)
+            {
+                tooltip.m_topic = "Sort container";
+                tooltip.m_text = "Arrange this chest by item type, then name. Keeps every stack in this chest.";
+            }
+        }
+
+        private static void SortOpenContainer()
+        {
+            if (_gui == null || !InventoryGui.IsVisible() || _gui.m_dragItem != null
+                || (_panel != null && _panel.activeSelf)) return;
+            Player player = Player.m_localPlayer;
+            if (player == null) return;
+            bool sorted = ContainerSort.Run(player, _gui.m_currentContainer);
+            player.Message(MessageHud.MessageType.TopLeft,
+                sorted ? "Chest Focus: container sorted" : "Chest Focus: cannot sort this container right now");
         }
 
         private static void BuildSettingsButton(InventoryGui gui)

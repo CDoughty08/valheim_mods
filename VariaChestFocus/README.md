@@ -2,7 +2,7 @@ AI disclaimer: AI tools were used in the development of this mod.
 
 # VariaChestFocus
 
-Choose what belongs in each chest, then press **H** to sort your inventory into nearby storage. Set allowed categories or individual items, choose which chests fill first, and give each chest a color.
+Choose what belongs in each chest, then press **H** to sort your inventory into nearby storage or **Left Shift + H** to sort items between nearby chests. Set allowed categories or individual items, choose which chests fill first, and give each chest a color.
 
 ## Features
 
@@ -12,9 +12,11 @@ Choose what belongs in each chest, then press **H** to sort your inventory into 
 - **Pin items**: adds every item type currently in the chest to that chest’s allowlist (categories unchanged); useful after stocking a chest by hand
 - **Clear** / **Copy** / **Paste** settings between chests
 - Open settings with the icon button to the left of **Place stacks**
+- **Sort container**: the **Sort** button immediately left of the Chest Focus icon arranges the open chest by item type, name, quality, and stack size, filling rows from the top left. Existing stacks and item data stay intact.
 - **Quick-sort order**: filtered chests first, then unrestricted chests; Critical → High → Medium → Low within each group, nearest first on ties. **Never** excludes either kind.
 - **Hover summary**: see the chest's priority, allowed categories, and pinned item count before opening it. Hidden when you don't have access.
 - **Quick-sort** keybind (default `H`): moves player inventory into nearby allowed chests, preserving equipped items and AzuEPI favorites
+- **Chest-to-chest quick-sort** (default `Left Shift + H`): scans nearby closed chests and moves items according to their filters and priority. No open chest is needed; player inventory stays untouched.
 - **Hotbar protection**: numbered slots **1–8** are skipped by default; toggle `QuickSort → ProtectHotbar` to allow sorting from them
 - Filters apply when putting items in; other mods, such as AzuCraftyBoxes, can still take items out
 - Caps for large bases: range, max chests, max moves per press
@@ -36,11 +38,12 @@ Ship and cart storage is skipped. Crossplay must be **disabled** for BepInEx.
 | Setting | Default | Notes |
 |---------|---------|--------|
 | Enabled | true | Master toggle |
-| SortKeybind | H | Quick-sort |
+| SortKeybind | H | Player inventory → nearby chests |
+| ChestSortKeybind | H + LeftShift | Nearby chests → other nearby chests; personal keybind |
 | ProtectHotbar | true | Skip numbered hotbar slots 1–8; personal setting, not server-synced |
 | SortRange | 16 | Meters |
-| MaxChests | 40 | Cap per press |
-| MaxMoves | 60 | Cap per press |
+| MaxChests | 40 | Cap per press; chest-to-chest sorting counts both sources and destinations |
+| MaxMoves | 60 | Successful transfers per press, including partial stacks |
 
 Optional ServerSync: set `LockConfiguration = true` on the server to sync shared settings.
 
@@ -56,8 +59,17 @@ Version 0.1.13 changes the default quick-sort key to **H**, leaving **G** for Va
    and choose a **Color** swatch or **Custom** at the bottom of the panel
 4. Close the panel (auto-saves if you own the chest)
 5. Press **H** (or your bind) near storage to auto-store
+6. With inventory closed, press **Left Shift + H** to redistribute nearby chest contents
+
+To tidy only one chest, open it and click **Sort**, immediately left of the Chest Focus icon. This fills its live grid by item type, then alphabetically by displayed name, with higher quality and larger stacks first. It preserves separate stacks, including modded item data, and can arrange existing items that no longer match the chest's filter. It also works on **Never** chests. Finish dragging an item and close the settings panel before using this button.
 
 An empty filter allows any item. Quick-sort tries filtered chests first, then puts remaining items into unrestricted chests. For example, a **Low** priority filtered chest fills before a **Critical** unrestricted chest. Within each group, higher priority comes first, with the nearest chest winning ties. Set priority to **Never** to exclude a chest from quick-sort. The old `IncludeUnsetChests` option no longer affects this order.
+
+Chest-to-chest sorting uses the same range, chest cap, destination order, and move cap as **H**. It scans eligible storage around the player; no chest needs to be open. **Never**, occupied, inaccessible, non-owned, ship/cart, and tombstone storage are excluded as both sources and destinations. The chest cap selects participants in the same filtered/priority/distance order before loading inventories.
+
+Items already allowed in their source chest move only to a better destination: matching filtered storage ahead of unrestricted storage, or higher priority within the same group. Equally suitable chests keep their contents even if you stand closer to another chest, preventing repeated shuffling. Items excluded by their source's current filter can move to any allowed destination, including unrestricted storage. Full destinations leave overflow in its source; changing chest filters never discards items. For example, wood in an unrestricted drop-off chest moves into a matching wood chest, and wood in a **Low** wood chest can move into a **High** wood chest.
+
+Both hotkeys run during gameplay with the inventory closed and pause while menus, chat, or the console capture input. Configure them separately under **QuickSort** in F1. **ChestSortKeybind** takes precedence if you assign the same shortcut to both actions.
 
 ## Chest colors
 
@@ -103,6 +115,10 @@ For an exact color, enter six hex digits such as `#709FE0` (the `#` is optional)
 Build without deploying to Gale: `dotnet build VariaChestFocus/VariaChestFocus.csproj -c Release -p:DeployMod=false`.
 
 Test instructions and in-game checks are in the [test README](../tests/VariaChestFocus.Tests/README.md).
+
+## Version 0.1.18
+
+Adds the **Sort** button beside the Chest Focus icon and **ChestSortKeybind** (default **Left Shift + H**) for nearby chest-to-chest sorting. **H** continues to store player inventory. Chest transfers save both sources and destinations once per press.
 
 ## Version 0.1.16
 
