@@ -4,6 +4,8 @@ AI disclaimer: AI tools were used in the development of this mod.
 
 Adds a **Weightlifting** skill. Carry items while moving to earn XP; heavier loads earn more. As the skill levels up, you can carry more weight.
 
+Requires [BepInExPack Valheim 5.4.2351](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/). Optional F1 configuration: [Official BepInEx Configuration Manager 19.0.0](https://valheim.hexium.gg/mods/Azumatt/Official_BepInEx_ConfigurationManager).
+
 ## Defaults
 
 | Setting | Default | Meaning |
@@ -25,6 +27,10 @@ By default each player uses their own config. To enforce server settings:
 2. Set `LockConfiguration = true` on the server
 
 With lock off (default), the mod stays client-side even if the server also has it. Launch with **crossplay disabled** for BepInEx.
+
+## Version 0.0.6
+
+Updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. ServerSync remains at the current 1.20 release.
 
 ## Version 0.0.4
 

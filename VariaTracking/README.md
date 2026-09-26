@@ -4,6 +4,8 @@ AI disclaimer: AI tools were used in the development of this mod.
 
 Adds a **Tracking** skill that shows nearby creatures on the minimap and large map. You start with grey dots in a narrow cone ahead of you. As you level up, you can see farther, detect creatures behind you, and learn more about them.
 
+Requires [BepInExPack Valheim 5.4.2351](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/). Optional F1 configuration: [Official BepInEx Configuration Manager 19.0.0](https://valheim.hexium.gg/mods/Azumatt/Official_BepInEx_ConfigurationManager).
+
 ## Features
 
 - Earn **Tracking** XP while moving with creatures in range
@@ -66,6 +68,8 @@ By default each player uses their own config. To enforce server settings:
 With lock off (default), the mod stays client-side even if the server also has it. Launch with **crossplay disabled** for BepInEx.
 
 ## Manual test checklist
+
+Version **0.1.3** updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. ServerSync remains at the current 1.20 release.
 
 Build without deploying or packaging: `dotnet build VariaTracking/VariaTracking.csproj -c Release -p:DeployMod=false -p:PackMod=false`.
 

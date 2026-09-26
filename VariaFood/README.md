@@ -4,6 +4,8 @@ AI disclaimer: AI tools were used in the development of this mod.
 
 Change how long food lasts, how much health, stamina, and eitr it gives, and how quickly those stats regenerate.
 
+Requires [BepInExPack Valheim 5.4.2351](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/). Optional F1 configuration: [Official BepInEx Configuration Manager 19.0.0](https://valheim.hexium.gg/mods/Azumatt/Official_BepInEx_ConfigurationManager).
+
 - Disable food decay (full HP / stamina / eitr until expiry)
 - Duration multiplier
 - Separate multipliers for health, stamina, and eitr
@@ -56,6 +58,8 @@ By default each player uses their own config. To enforce server settings:
 With lock off (default), the mod stays client-side even if the server also has it. Launch with **crossplay disabled** for BepInEx.
 
 ## Development
+
+Version **0.1.5** updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. ServerSync remains at the current 1.20 release.
 
 Build without deploying to Gale: `dotnet build VariaFood/VariaFood.csproj -c Release -p:DeployMod=false`.
 

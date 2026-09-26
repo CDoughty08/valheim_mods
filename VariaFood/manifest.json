@@ -1,9 +1,9 @@
 {
   "name": "VariaFood",
-  "version_number": "0.1.4",
+  "version_number": "0.1.5",
   "website_url": "",
   "description": "Configurable food duration/stats/regen, no-decay, tooltips, plus 4 food + 1 drink HUD slots (drink-slot flask hint). Optional ServerSync. F1 config supported.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2202"
+    "denikson-BepInExPack_Valheim-5.4.2351"
   ]
 }

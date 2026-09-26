@@ -14,8 +14,9 @@ BepInEx mods for Valheim 1.0+. Install them through [Gale](https://github.com/ke
 ## Requirements
 
 - Valheim 1.0+ (Steam)
-- [Gale](https://thunderstore.io/) profile with `denikson-BepInExPack_Valheim`
-- Optional: Azumatt Official BepInEx Configuration Manager (F1)
+- [Gale](https://thunderstore.io/) profile with [BepInExPack Valheim 5.4.2351](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/)
+- Optional: [Official BepInEx Configuration Manager 19.0.0](https://valheim.hexium.gg/mods/Azumatt/Official_BepInEx_ConfigurationManager) (F1)
+- Optional for ChestFocus: [AzuEPI 2.6.0](https://valheim.hexium.gg/mods/Azumatt/AzuExtendedPlayerInventory) (equipment, quick-slot and favorite protection)
 - **Crossplay disabled** when using BepInEx mods
 
 ## Build
@@ -37,6 +38,20 @@ This produces the DLL and a zip under `bin/Release/`. Add `-p:PackMod=false` to 
 ## Development
 
 Each mod has its own folder and targets .NET Framework 4.8, BepInEx 5, and HarmonyX. Builds use game assemblies from `VALHEIM_INSTALL` and publicize them locally. Shared build settings are in `Directory.Build.props`; packaging and deployment targets are in `Shared/ModPackaging.targets`.
+
+### Dependency baseline (2026-09-26)
+
+Build package versions are shared by all four mods and the regression runners through `Directory.Build.props`:
+
+| Dependency | Version | Role |
+|------------|---------|------|
+| [BepInEx.Core](https://nuget.bepinex.dev/v3/package/bepinex.core/index.json) | 5.4.21 | Latest published stable BepInEx 5 NuGet API; runtime pack is 5.4.2351 (BepInEx 5.4.23.5) |
+| [HarmonyX](https://www.nuget.org/packages/HarmonyX/2.16.1) | 2.16.1 | Compile reference; BepInEx supplies Harmony at runtime |
+| [AssemblyPublicizer](https://www.nuget.org/packages/BepInEx.AssemblyPublicizer.MSBuild/0.4.3) | 0.4.3 | Latest stable build tool; excludes 0.5 beta releases |
+| [ILRepack](https://www.nuget.org/packages/ILRepack.Lib.MSBuild.Task/2.0.48) | 2.0.48 | Merges ServerSync into each mod |
+| [ServerSync](https://github.com/blaxxun-boop/ServerSync/releases/tag/v1.20) | 1.20 | Latest release; vendored DLL verified against the upstream SHA-256 |
+
+AzuEPI and Configuration Manager remain optional integrations, with current releases on Hexium. Their deprecated Thunderstore listings contain older versions. ChestFocus's existing slot and favorite API checks pass against the installed AzuEPI 2.6.0 DLL. No AzuEPI or Configuration Manager DLL is bundled in Varia packages.
 
 For a new mod, copy an existing project's structure, use a `Varia` name and a lowercase `com.varia.*` plugin GUID, and include a manifest, README, and icon. Keep the version in the project file, `PluginVersion`, and `manifest.json` in sync. Gale folders use `$(VariaAuthor)-$(VariaModName)`.
 

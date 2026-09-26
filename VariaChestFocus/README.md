@@ -24,6 +24,8 @@ Choose what belongs in each chest, then press **H** to sort your inventory into 
 
 ## Compatibility
 
+Requires [BepInExPack Valheim 5.4.2351](https://thunderstore.io/c/valheim/p/denikson/BepInExPack_Valheim/). Optional F1 configuration: [Official BepInEx Configuration Manager 19.0.0](https://valheim.hexium.gg/mods/Azumatt/Official_BepInEx_ConfigurationManager). AzuEPI integration signatures are checked against [AzuEPI 2.6.0](https://valheim.hexium.gg/mods/Azumatt/AzuExtendedPlayerInventory); it remains optional.
+
 - **AzuContainerSizes** (size changes) — uses the container's live inventory
 - **AzuCraftyBoxes** — inbound filter only
 - **AzuEPI** — quick-sort skips equipment slots, quick slots, favorited item types, and items in favorited inventory slots. Spare stacks in normal inventory can still be sorted unless favorited. Changes to favorites take effect on the next press. If the mod cannot read AzuEPI's protections, sorting pauses and logs a warning.
@@ -115,6 +117,10 @@ For an exact color, enter six hex digits such as `#709FE0` (the `#` is optional)
 Build without deploying to Gale: `dotnet build VariaChestFocus/VariaChestFocus.csproj -c Release -p:DeployMod=false`.
 
 Test instructions and in-game checks are in the [test README](../tests/VariaChestFocus.Tests/README.md).
+
+## Version 0.1.19
+
+Updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. Slot and favorite integration signatures are verified against AzuEPI 2.6.0. ServerSync remains at the current 1.20 release.
 
 ## Version 0.1.18
 

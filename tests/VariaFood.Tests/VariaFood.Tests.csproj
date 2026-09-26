@@ -8,7 +8,7 @@
   <ItemGroup>
     <Compile Include="../../VariaFood/Patches/HudFoodSlotPatches.cs" Link="Production/HudFoodSlotPatches.cs" />
     <Compile Include="../../VariaFood/DrinkDisplay.cs" Link="Production/DrinkDisplay.cs" />
-    <PackageReference Include="HarmonyX" Version="2.10.2" />
+    <PackageReference Include="HarmonyX" Version="$(VariaHarmonyXVersion)" />
     <Compile Include="../../VariaFood/FoodConfig.cs" Link="Production/FoodConfig.cs" />
     <Compile Include="../../VariaFood/FoodMath.cs" Link="Production/FoodMath.cs" />
     <Compile Include="../../VariaFood/FoodSlots.cs" Link="Production/FoodSlots.cs" />

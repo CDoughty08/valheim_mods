@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../VariaChestFocus/PaintMemoryBudget.cs" Link="Production/PaintMemoryBudget.cs" />
-    <PackageReference Include="HarmonyX" Version="2.10.2" />
+    <PackageReference Include="HarmonyX" Version="$(VariaHarmonyXVersion)" />
     <Compile Include="../../VariaChestFocus/Enums.cs" Link="Production/Enums.cs" />
     <Compile Include="../../VariaChestFocus/ChestSettings.cs" Link="Production/ChestSettings.cs" />
     <Compile Include="../../VariaChestFocus/ChestPalette.cs" Link="Production/ChestPalette.cs" />

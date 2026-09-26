@@ -1,9 +1,9 @@
 {
   "name": "VariaChestFocus",
-  "version_number": "0.1.18",
+  "version_number": "0.1.19",
   "website_url": "",
   "description": "Per-chest filters and colors, a container sort button, and priority-aware quick-sort from inventory or between nearby chests.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2202"
+    "denikson-BepInExPack_Valheim-5.4.2351"
   ]
 }

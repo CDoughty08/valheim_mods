@@ -9,7 +9,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaChestFocus</AssemblyName>
     <RootNamespace>VariaChestFocus</RootNamespace>
-    <Version>0.1.18</Version>
+    <Version>0.1.19</Version>
     <VariaModName>VariaChestFocus</VariaModName>
     <VariaIcon>$(MSBuildProjectDirectory)\..\assets\chestfocus_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>
@@ -23,10 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BepInEx.Core" Version="5.4.21" IncludeAssets="compile" />
-    <PackageReference Include="HarmonyX" Version="2.10.2" IncludeAssets="compile" />
-    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.44.1" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="$(VariaBepInExCoreVersion)" IncludeAssets="compile" />
+    <PackageReference Include="HarmonyX" Version="$(VariaHarmonyXVersion)" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="$(VariaAssemblyPublicizerVersion)" PrivateAssets="all" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="$(VariaILRepackVersion)" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
