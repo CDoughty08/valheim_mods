@@ -14,7 +14,7 @@ namespace VariaFood
     {
         public const string PluginGuid = "com.varia.food";
         public const string PluginName = "VariaFood";
-        public const string PluginVersion = "0.1.5";
+        public const string PluginVersion = "0.1.6";
 
         /// <summary>Vanilla food regen pulse interval (seconds).</summary>
         public const float RegenTickSeconds = 10f;

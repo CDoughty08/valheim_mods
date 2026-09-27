@@ -15,9 +15,14 @@ and preserving another mod's material replacement. The optional installed-game c
 verifies the material-assignment call site in `Destructible.CreateFragments`. These checks
 do not execute GPU allocation, Unity's native destruction order, or in-game rendering.
 
-Optional positional arguments are the installed `assembly_valheim.dll` path and AzuEPI
-DLL path. These add read-only metadata checks for the patched bulk-transfer call sites,
-game method signatures, and AzuEPI delegate signature. No game assemblies are copied.
+Optional positional arguments are the installed `assembly_valheim.dll` path, AzuEPI
+DLL path, and built `VariaChestFocus.dll` path. These add read-only metadata checks for
+the patched bulk-transfer call sites, game method signatures, AzuEPI delegate signature,
+and the built plugin's runtime dependencies. No game assemblies are copied.
+
+Pass the Release DLL as the third argument before shipping. This catches dependencies
+that exist in the test runner's NuGet output but are absent from the game and mod package,
+including the `MonoMod.Backports` string-formatting dependency that broke sorting in 0.1.22.
 
 Compile against the installed game without deploying:
 
@@ -138,8 +143,11 @@ The installed-game metadata check also verifies the inventory change callback, d
 methods, and the drag-item field used by the button. These checks use inventory doubles;
 they do not execute native inventory serialization or the UI.
 
-In game, check **Sort** appears immediately left of the Chest Focus icon at small/large
-UI scales and with AzuContainerSizes. Sort a full chest containing equipment, partial stacks,
+In game, check **Sort**, **Settings**, **Area sort**, and **Quick sort** appear to the right
+of the chest grid above its weight display at small/large UI scales and with AzuContainerSizes.
+The buttons should use the weight panel's artwork and leave chest names, Place stacks,
+Take all, scrollbars and Reclaim all clear. Very short custom containers should move the
+controls into a neighboring column without obscuring the weight. Sort a full chest containing equipment, partial stacks,
 modded item data and items excluded by a changed filter; only positions should change.
 Repeat on a Never chest, then reload and verify positions persist. Check disabled state
 while dragging or editing settings, ownership/access loss, mod disable, and plugin unload.
@@ -153,3 +161,15 @@ save/reload both inventories. Repeat with another client holding a chest open or
 it, and with wards/private storage. Verify plain H still stores player inventory, each
 custom keybind triggers only its configured action (chest sorting wins identical binds),
 and neither key runs while inventory/settings, menus, chat or console capture input.
+
+Side controls (0.1.20): automated checks cover quick-sort into the current open chest,
+area-sort with the open chest as either source or destination, retaining its live inventory,
+excluding other occupied chests, item/hotbar protections, access and ownership denial,
+Never/unsupported storage, range/chest/move limits, and saving both ends of partial moves.
+In game, compare button results with their hotkeys, including the documented open-chest
+exception. Verify the grid and weight update, explanatory tooltips and hover/pressed/disabled
+states work, and all sort buttons disable while dragging, splitting or editing settings.
+Check the inventory frame covers the buttons' left edge just like the weight indicator,
+while their exposed faces remain clickable and show tooltips (0.1.22).
+Close/reopen and switch chests, disable/re-enable the mod, and unload the plugin; no old
+header buttons or duplicate side controls should remain. Check mouse and controller focus.

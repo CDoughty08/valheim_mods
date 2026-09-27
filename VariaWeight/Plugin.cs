@@ -43,7 +43,7 @@ namespace VariaWeight
     {
         public const string PluginGuid = "com.varia.weight";
         public const string PluginName = "VariaWeight";
-        public const string PluginVersion = "0.0.6";
+        public const string PluginVersion = "0.0.7";
 
         /// <summary>Stable skill id — do not change after release (save data keys off SkillType hash).</summary>
         public const string SkillIdentifier = "com.varia.weight.weightlifting";

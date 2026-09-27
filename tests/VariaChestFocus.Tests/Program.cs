@@ -312,6 +312,30 @@ Check("quick-sort enforces wards, privacy, ownership, and in-use state", () => {
     c.Accessible = true; c.m_nview.Owner = false; Assert(QuickSort.Run(player, Config()) == 0);
     c.m_nview.Owner = true; c.InUse = true; Assert(QuickSort.Run(player, Config()) == 0); Remove(c);
 });
+Check("quick-sort button includes the current chest while keeping protection and occupancy guards", () => {
+    var open = Chest("Wood"); open.InUse = true;
+    var occupied = Chest("Wood"); occupied.InUse = true;
+    var player = new Player();
+    var carried = Item("Wood", 4); var hotbar = Item("Wood", 5); hotbar.m_gridPos = new Vector2i(0, 0);
+    var equipped = Item("Wood", 6); equipped.m_equipped = true;
+    var excluded = Item("Stone", 7);
+    player.Inventory.Items.AddRange(new[] { carried, hotbar, equipped, excluded });
+    try
+    {
+        Assert(QuickSort.Run(player, Config()) == 0);
+        open.Accessible = false;
+        Assert(QuickSort.Run(player, Config(), open) == 0);
+        open.Accessible = true; open.m_nview.Owner = false;
+        Assert(QuickSort.Run(player, Config(), open) == 0);
+        open.m_nview.Owner = true;
+        Assert(QuickSort.Run(player, Config(), open) == 1);
+        Assert(open.Loads == 0 && open.Saves == 1 && open.SavedTotal == 4);
+        Assert(occupied.Loads == 0 && occupied.Saves == 0 && occupied.m_inventory.Items.Count == 0);
+        Assert(player.Inventory.Items.SequenceEqual(new[] { hotbar, equipped, excluded }));
+        Assert(QuickSort.Run(player, Config(), open) == 0 && open.Saves == 1);
+    }
+    finally { Remove(open, occupied); }
+});
 Check("quick-sort flushes successful moves and recovers after an exception", () => {
     var a = Chest("Wood", 5); var b = Chest("Wood", 5, 1); b.m_inventory.ThrowOnMove = true;
     var player = new Player(); player.Inventory.Items.Add(Item("Wood", 10));
@@ -721,6 +745,23 @@ if (args.Length > 1)
         var check = favorites.Methods.Single(m => m.Name == "IsItemNameOrSlotFavorited");
         Assert(check.IsPublic && !check.IsStatic && check.ReturnType.FullName == "System.Boolean");
         Assert(check.Parameters.Count == 1 && check.Parameters[0].ParameterType.Name == "ItemData");
+    });
+}
+if (args.Length > 2)
+{
+    Check("built plugin references only libraries supplied by Valheim and BepInEx", () => {
+        // Inspect the shipped assembly, not the stub runner: NuGet supplies extra
+        // libraries to tests that are deliberately absent from the mod package.
+        using var plugin = Mono.Cecil.AssemblyDefinition.ReadAssembly(args[2]);
+        var supplied = new HashSet<string>(StringComparer.Ordinal) {
+            "mscorlib", "System", "System.Core", "BepInEx", "0Harmony",
+            "assembly_valheim", "assembly_utils", "assembly_guiutils",
+            "UnityEngine", "UnityEngine.CoreModule", "UnityEngine.UI",
+            "UnityEngine.UIModule", "UnityEngine.TextRenderingModule", "Unity.TextMeshPro"
+        };
+        var missing = plugin.MainModule.AssemblyReferences
+            .Where(reference => !supplied.Contains(reference.Name)).ToArray();
+        Assert(missing.Length == 0, "Unshipped runtime dependencies: " + string.Join(", ", missing.Select(reference => reference.FullName)));
     });
 }
 Console.WriteLine($"{passed} regression checks passed.");

@@ -9,7 +9,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaFood</AssemblyName>
     <RootNamespace>VariaFood</RootNamespace>
-    <Version>0.1.5</Version>
+    <Version>0.1.6</Version>
     <VariaModName>VariaFood</VariaModName>
     <VariaIcon>$(MSBuildProjectDirectory)\..\assets\food_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>

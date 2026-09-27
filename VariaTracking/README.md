@@ -69,6 +69,8 @@ With lock off (default), the mod stays client-side even if the server also has i
 
 ## Manual test checklist
 
+Version **0.1.4** fixes a missing `MonoMod.Backports` dependency in 0.1.3 that could prevent the plugin from initializing. Message formatting now uses the game's framework APIs. Restart Valheim after updating; no extra runtime DLL is needed.
+
 Version **0.1.3** updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. ServerSync remains at the current 1.20 release.
 
 Build without deploying or packaging: `dotnet build VariaTracking/VariaTracking.csproj -c Release -p:DeployMod=false -p:PackMod=false`.

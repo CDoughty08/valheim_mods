@@ -1,3 +1,9 @@
 <Project>
+  <ItemGroup Condition="'$(VariaModName)' != ''">
+    <!-- HarmonyX exposes this polyfill transitively, but BepInEx 5 does not ship
+         it. Keep it out of every mod's compiler references so interpolated
+         strings use framework APIs without adding a missing runtime dependency. -->
+    <PackageReference Include="MonoMod.Backports" Version="1.1.2" ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
   <Import Project="Shared\ModPackaging.targets" Condition="'$(VariaModName)' != ''" />
 </Project>

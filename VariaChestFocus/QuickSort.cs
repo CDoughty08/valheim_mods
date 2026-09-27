@@ -37,23 +37,25 @@ namespace VariaChestFocus
             public ItemDrop.ItemData Item;
         }
 
-        internal static int Run(Player player, in ChestFocusConfigSnapshot cfg)
+        // UI callers may pass only their currently open container. All other occupied
+        // storage remains excluded, and hotkeys use the default closed-chest behavior.
+        internal static int Run(Player player, in ChestFocusConfigSnapshot cfg, Container openContainer = null)
         {
-            return Execute(player, cfg, betweenChests: false);
+            return Execute(player, cfg, betweenChests: false, openContainer);
         }
 
-        internal static int RunChests(Player player, in ChestFocusConfigSnapshot cfg)
+        internal static int RunChests(Player player, in ChestFocusConfigSnapshot cfg, Container openContainer = null)
         {
-            return Execute(player, cfg, betweenChests: true);
+            return Execute(player, cfg, betweenChests: true, openContainer);
         }
 
-        private static int Execute(Player player, in ChestFocusConfigSnapshot cfg, bool betweenChests)
+        private static int Execute(Player player, in ChestFocusConfigSnapshot cfg, bool betweenChests, Container openContainer)
         {
             if (_running) return 0;
             _running = true;
             try
             {
-                return RunCore(player, cfg, betweenChests);
+                return RunCore(player, cfg, betweenChests, openContainer);
             }
             finally
             {
@@ -92,7 +94,7 @@ namespace VariaChestFocus
             }
         }
 
-        private static int RunCore(Player player, in ChestFocusConfigSnapshot cfg, bool betweenChests)
+        private static int RunCore(Player player, in ChestFocusConfigSnapshot cfg, bool betweenChests, Container openContainer)
         {
             if (player == null || !cfg.Enabled)
             {
@@ -114,7 +116,7 @@ namespace VariaChestFocus
             for (int i = 0; i < nearby.Count; i++)
             {
                 Container container = nearby[i];
-                if (!ContainerAccess.CanModify(player, container))
+                if (!ContainerAccess.CanModify(player, container, allowInUse: container == openContainer))
                 {
                     continue;
                 }
@@ -154,12 +156,13 @@ namespace VariaChestFocus
             for (int i = 0; i < DestScratch.Count; i++)
             {
                 Dest dest = DestScratch[i];
-                dest.Container.Load();
+                // The visible grid already holds the current live inventory and item references.
+                if (dest.Container != openContainer) dest.Container.Load();
                 dest.Inventory = dest.Container.GetInventory();
                 DestScratch[i] = dest;
             }
 
-            if (betweenChests) return MoveChestItems(player, cfg);
+            if (betweenChests) return MoveChestItems(player, cfg, openContainer);
 
             ItemScratch.Clear();
             List<ItemDrop.ItemData> all = playerInv.GetAllItems();
@@ -196,7 +199,8 @@ namespace VariaChestFocus
                 for (int d = 0; d < DestScratch.Count && moves < maxMoves; d++)
                 {
                     Dest dest = DestScratch[d];
-                    if (dest.Inventory == null || !dest.Settings.Allows(item))
+                    if (dest.Inventory == null || !dest.Settings.Allows(item)
+                        || !ContainerAccess.CanModify(player, dest.Container, allowInUse: dest.Container == openContainer))
                     {
                         continue;
                     }
@@ -227,7 +231,7 @@ namespace VariaChestFocus
             return moves;
         }
 
-        private static int MoveChestItems(Player player, in ChestFocusConfigSnapshot cfg)
+        private static int MoveChestItems(Player player, in ChestFocusConfigSnapshot cfg, Container openContainer)
         {
             // Snapshot every source before any move. An item arriving in another chest
             // must not become new work during the same press.
@@ -246,7 +250,7 @@ namespace VariaChestFocus
                 Dest source = entry.Source;
                 ItemDrop.ItemData item = entry.Item;
                 if (item.m_stack <= 0 || !source.Inventory.ContainsItem(item)
-                    || !ContainerAccess.CanModify(player, source.Container)) continue;
+                    || !ContainerAccess.CanModify(player, source.Container, allowInUse: source.Container == openContainer)) continue;
 
                 bool belongsHere = source.Settings.Allows(item);
                 foreach (Dest dest in DestScratch)
@@ -255,7 +259,7 @@ namespace VariaChestFocus
                     if (dest.Inventory == null || dest.Inventory == source.Inventory
                         || !dest.Settings.Allows(item)
                         || belongsHere && CompareRank(dest, source) >= 0
-                        || !ContainerAccess.CanModify(player, dest.Container)
+                        || !ContainerAccess.CanModify(player, dest.Container, allowInUse: dest.Container == openContainer)
                         || !dest.Inventory.CanAddItem(item, 1)) continue;
 
                     int before = item.m_stack;

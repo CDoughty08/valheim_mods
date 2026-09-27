@@ -28,6 +28,10 @@ By default each player uses their own config. To enforce server settings:
 
 With lock off (default), the mod stays client-side even if the server also has it. Launch with **crossplay disabled** for BepInEx.
 
+## Version 0.0.7
+
+Fixes a missing `MonoMod.Backports` dependency in 0.0.6 that could prevent the plugin from initializing. Message formatting now uses the game's framework APIs. Restart Valheim after updating; no extra runtime DLL is needed.
+
 ## Version 0.0.6
 
 Updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. ServerSync remains at the current 1.20 release.

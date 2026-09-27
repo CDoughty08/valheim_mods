@@ -2,7 +2,7 @@ AI disclaimer: AI tools were used in the development of this mod.
 
 # VariaChestFocus
 
-Choose what belongs in each chest, then press **H** to sort your inventory into nearby storage or **Left Shift + H** to sort items between nearby chests. Set allowed categories or individual items, choose which chests fill first, and give each chest a color.
+Choose what belongs in each chest, then use **Quick sort** to store your inventory or **Area sort** to sort items between nearby chests. Both buttons sit beside the chest grid, along with **Sort** and **Settings**. The **H** and **Left Shift + H** shortcuts also work with the inventory closed. Set allowed categories or individual items, choose which chests fill first, and give each chest a color.
 
 ## Features
 
@@ -11,12 +11,12 @@ Choose what belongs in each chest, then press **H** to sort your inventory into 
 - **Categories** (wood, ores, food, trophies, etc.) and a **searchable item browser** for vanilla and modded items
 - **Pin items**: adds every item type currently in the chest to that chest’s allowlist (categories unchanged); useful after stocking a chest by hand
 - **Clear** / **Copy** / **Paste** settings between chests
-- Open settings with the icon button to the left of **Place stacks**
-- **Sort container**: the **Sort** button immediately left of the Chest Focus icon arranges the open chest by item type, name, quality, and stack size, filling rows from the top left. Existing stacks and item data stay intact.
+- **Chest controls**: **Sort**, **Settings**, **Area sort**, and **Quick sort** sit to the right of the grid, above the weight display, using its background artwork. Each button has an explanatory tooltip. Very short custom containers use a neighboring column to keep the weight display clear.
+- **Sort container**: **Sort** arranges the open chest by item type, name, quality, and stack size, filling rows from the top left. Existing stacks and item data stay intact.
 - **Quick-sort order**: filtered chests first, then unrestricted chests; Critical → High → Medium → Low within each group, nearest first on ties. **Never** excludes either kind.
 - **Hover summary**: see the chest's priority, allowed categories, and pinned item count before opening it. Hidden when you don't have access.
-- **Quick-sort** keybind (default `H`): moves player inventory into nearby allowed chests, preserving equipped items and AzuEPI favorites
-- **Chest-to-chest quick-sort** (default `Left Shift + H`): scans nearby closed chests and moves items according to their filters and priority. No open chest is needed; player inventory stays untouched.
+- **Quick sort** button or keybind (default `H`): moves player inventory into nearby allowed chests, preserving equipped items and AzuEPI favorites
+- **Area sort** button or keybind (default `Left Shift + H`): moves items between nearby chests according to their filters and priority. Player inventory stays untouched. The buttons include your current open chest; the hotkeys work without opening any chest.
 - **Hotbar protection**: numbered slots **1–8** are skipped by default; toggle `QuickSort → ProtectHotbar` to allow sorting from them
 - Filters apply when putting items in; other mods, such as AzuCraftyBoxes, can still take items out
 - Caps for large bases: range, max chests, max moves per press
@@ -55,23 +55,23 @@ Version 0.1.13 changes the default quick-sort key to **H**, leaving **G** for Va
 
 ## Usage
 
-1. Open a chest → **Chest Focus icon** left of Place stacks
+1. Open a chest → **Settings**, above the weight display to the right of the grid
 2. Set priority, toggle categories, search/toggle items
 3. Optionally **Pin** what’s already inside
    and choose a **Color** swatch or **Custom** at the bottom of the panel
 4. Close the panel (auto-saves if you own the chest)
-5. Press **H** (or your bind) near storage to auto-store
-6. With inventory closed, press **Left Shift + H** to redistribute nearby chest contents
+5. Click **Quick sort** to auto-store, or close the inventory and press **H** (or your bind) near storage
+6. Click **Area sort** to redistribute nearby chest contents, or close the inventory and press **Left Shift + H**
 
-To tidy only one chest, open it and click **Sort**, immediately left of the Chest Focus icon. This fills its live grid by item type, then alphabetically by displayed name, with higher quality and larger stacks first. It preserves separate stacks, including modded item data, and can arrange existing items that no longer match the chest's filter. It also works on **Never** chests. Finish dragging an item and close the settings panel before using this button.
+To tidy only one chest, open it and click **Sort** at the top of the side controls. This fills its live grid by item type, then alphabetically by displayed name, with higher quality and larger stacks first. It preserves separate stacks, including modded item data, and can arrange existing items that no longer match the chest's filter. It also works on **Never** chests. Finish dragging or splitting an item and close the settings panel before using any sort button.
 
 An empty filter allows any item. Quick-sort tries filtered chests first, then puts remaining items into unrestricted chests. For example, a **Low** priority filtered chest fills before a **Critical** unrestricted chest. Within each group, higher priority comes first, with the nearest chest winning ties. Set priority to **Never** to exclude a chest from quick-sort. The old `IncludeUnsetChests` option no longer affects this order.
 
-Chest-to-chest sorting uses the same range, chest cap, destination order, and move cap as **H**. It scans eligible storage around the player; no chest needs to be open. **Never**, occupied, inaccessible, non-owned, ship/cart, and tombstone storage are excluded as both sources and destinations. The chest cap selects participants in the same filtered/priority/distance order before loading inventories.
+Chest-to-chest sorting uses the same range, chest cap, destination order, and move cap as **H**. It scans eligible storage around the player; no chest needs to be open when using the shortcut. **Never**, occupied, inaccessible, non-owned, ship/cart, and tombstone storage are excluded as both sources and destinations. The buttons allow your current open chest to participate while continuing to exclude all other occupied storage. The chest cap selects participants in the same filtered/priority/distance order before loading inventories.
 
 Items already allowed in their source chest move only to a better destination: matching filtered storage ahead of unrestricted storage, or higher priority within the same group. Equally suitable chests keep their contents even if you stand closer to another chest, preventing repeated shuffling. Items excluded by their source's current filter can move to any allowed destination, including unrestricted storage. Full destinations leave overflow in its source; changing chest filters never discards items. For example, wood in an unrestricted drop-off chest moves into a matching wood chest, and wood in a **Low** wood chest can move into a **High** wood chest.
 
-Both hotkeys run during gameplay with the inventory closed and pause while menus, chat, or the console capture input. Configure them separately under **QuickSort** in F1. **ChestSortKeybind** takes precedence if you assign the same shortcut to both actions.
+Both hotkeys run during gameplay with the inventory closed and pause while menus, chat, or the console capture input. Configure them separately under **QuickSort** in F1. **ChestSortKeybind** takes precedence if you assign the same shortcut to both actions. The buttons work while a chest is open and pause while dragging, splitting a stack, editing chest settings, or using those other menus. Buttons and shortcuts share the same sorting rules and feedback messages.
 
 ## Chest colors
 
@@ -117,6 +117,22 @@ For an exact color, enter six hex digits such as `#709FE0` (the `#` is optional)
 Build without deploying to Gale: `dotnet build VariaChestFocus/VariaChestFocus.csproj -c Release -p:DeployMod=false`.
 
 Test instructions and in-game checks are in the [test README](../tests/VariaChestFocus.Tests/README.md).
+
+## Version 0.1.23
+
+Fixes Quick sort and Area sort failing from both their hotkeys and buttons with a missing `MonoMod.Backports` error. The build now excludes that transitive compiler reference, keeping message formatting on the framework APIs supplied by the game. No extra runtime DLL is needed. Restart Valheim after updating.
+
+## Version 0.1.22
+
+Draws the side buttons behind the inventory frame, matching the weight indicator's tucked-under appearance.
+
+## Version 0.1.21
+
+Removes the horizontal gap between the side buttons and the inventory edge.
+
+## Version 0.1.20
+
+Moves **Sort** and **Settings** into a vertical strip beside the chest grid, above its weight display, and adds **Area sort** and **Quick sort** buttons. The controls reuse the weight panel's artwork and keep the chest name and vanilla buttons clear. Button sorting includes your current open chest without reloading its live inventory; other occupied storage stays protected. Keyboard shortcuts retain their existing behavior.
 
 ## Version 0.1.19
 

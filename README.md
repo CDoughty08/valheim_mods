@@ -57,6 +57,12 @@ For a new mod, copy an existing project's structure, use a `Varia` name and a lo
 
 Keep game assemblies, decompiled source, build output, local `Environment.props` files, and BepInEx configs out of version control. Local source dumps belong in the ignored `_decompile/` folder.
 
+All mod projects exclude HarmonyX's transitive `MonoMod.Backports` compiler reference
+through `Directory.Build.targets`. BepInEx 5 does not ship this library; allowing it
+into compilation can silently make interpolated messages require it at runtime.
+Before deploying, run the [release dependency checks](tests/VariaPackaging.Tests/README.md)
+on the built DLLs or release ZIPs as well as the behavior tests.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

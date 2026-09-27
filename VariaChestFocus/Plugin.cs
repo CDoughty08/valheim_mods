@@ -27,7 +27,7 @@ namespace VariaChestFocus
     {
         public const string PluginGuid = "com.varia.chestfocus";
         public const string PluginName = "VariaChestFocus";
-        public const string PluginVersion = "0.1.19";
+        public const string PluginVersion = "0.1.23";
 
         private static readonly ConfigSync ConfigSync = new(PluginGuid)
         {
@@ -184,7 +184,15 @@ namespace VariaChestFocus
                 return;
             }
 
-            int moves = sortChests ? QuickSort.RunChests(player, cfg) : QuickSort.Run(player, cfg);
+            RunQuickSort(sortChests);
+        }
+
+        internal static void RunQuickSort(bool sortChests, Container openContainer = null)
+        {
+            ChestFocusConfigSnapshot cfg = ConfigSnapshot;
+            Player player = Player.m_localPlayer;
+            if (!cfg.Enabled || player == null) return;
+            int moves = sortChests ? QuickSort.RunChests(player, cfg, openContainer) : QuickSort.Run(player, cfg, openContainer);
             player.Message(
                 MessageHud.MessageType.TopLeft,
                 sortChests

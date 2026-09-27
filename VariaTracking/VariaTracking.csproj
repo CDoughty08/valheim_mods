@@ -9,7 +9,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaTracking</AssemblyName>
     <RootNamespace>VariaTracking</RootNamespace>
-    <Version>0.1.3</Version>
+    <Version>0.1.4</Version>
     <VariaModName>VariaTracking</VariaModName>
     <VariaIcon>$(MSBuildProjectDirectory)\..\assets\tracking_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>

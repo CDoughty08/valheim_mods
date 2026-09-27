@@ -59,6 +59,8 @@ With lock off (default), the mod stays client-side even if the server also has i
 
 ## Development
 
+Version **0.1.6** fixes a missing `MonoMod.Backports` dependency in 0.1.5 that could prevent food HUD setup and food/drink handling. Message formatting now uses the game's framework APIs. Restart Valheim after updating; no extra runtime DLL is needed.
+
 Version **0.1.5** updates the BepInExPack requirement and builds with HarmonyX 2.16.1, AssemblyPublicizer 0.4.3, and ILRepack 2.0.48. ServerSync remains at the current 1.20 release.
 
 Build without deploying to Gale: `dotnet build VariaFood/VariaFood.csproj -c Release -p:DeployMod=false`.

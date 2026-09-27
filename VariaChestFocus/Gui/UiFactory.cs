@@ -148,6 +148,61 @@ namespace VariaChestFocus.Gui
             return btn;
         }
 
+        internal static Button CloneWeightButton(string name, Transform parent, string label,
+            Vector2 size, Image weight, UnityAction onClick)
+        {
+            Button button = CloneButton(name, parent, label, size, onClick);
+            if (button == null) return null;
+            Image background = button.targetGraphic as Image;
+            if (weight != null && background != null)
+            {
+                background.sprite = weight.sprite;
+                background.overrideSprite = null;
+                background.type = weight.type;
+                background.color = weight.color;
+                background.material = weight.material;
+                background.pixelsPerUnitMultiplier = weight.pixelsPerUnitMultiplier;
+                button.transition = Selectable.Transition.ColorTint;
+                ColorBlock colors = button.colors;
+                colors.normalColor = Color.white;
+                colors.highlightedColor = colors.selectedColor = new Color(1f, 0.9f, 0.65f, 1f);
+                colors.pressedColor = new Color(0.65f, 0.65f, 0.65f, 1f);
+                colors.disabledColor = new Color(0.45f, 0.45f, 0.45f, 0.65f);
+                button.colors = colors;
+
+                // Reuse just the weight panel's artwork, never its icon or live counter.
+                Transform texture = weight.transform.Find("bkg");
+                Image source = texture != null ? texture.GetComponent<Image>() : null;
+                if (source != null)
+                {
+                    RectTransform rt = CreateRect("WeightTexture", button.transform);
+                    Stretch(rt);
+                    rt.SetAsFirstSibling();
+                    Image image = rt.gameObject.AddComponent<Image>();
+                    image.sprite = source.sprite;
+                    image.type = source.type;
+                    image.color = source.color;
+                    image.material = source.material;
+                    image.raycastTarget = false;
+                }
+            }
+            TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
+            if (text != null)
+            {
+                text.fontSize = 15f;
+                text.enableAutoSizing = true;
+                text.fontSizeMin = 12f;
+                text.fontSizeMax = 15f;
+                text.textWrappingMode = TextWrappingModes.NoWrap;
+                text.alignment = TextAlignmentOptions.Center;
+                text.raycastTarget = false;
+                Stretch(text.rectTransform);
+                text.rectTransform.offsetMin = new Vector2(5f, 3f);
+                text.rectTransform.offsetMax = new Vector2(-5f, -3f);
+            }
+            return button;
+        }
+
         internal static void SetButtonLabel(Button button, string label)
         {
             if (button == null)

@@ -10,15 +10,24 @@ namespace VariaChestFocus.Gui
     {
         private const string ButtonName = "VariaChestFocus_Settings";
         private const string SortButtonName = "VariaChestFocus_Sort";
+        private const string ActionBarName = "VariaChestFocus_Actions";
         private const string PanelName = "VariaChestFocus_Panel";
         private const string LegacyButtonName = "VariaChestFocus_Button";
         private const int PageSize = 24;
-        private const int LayoutVersion = 10;
+        private const int LayoutVersion = 13;
+        private const float ActionWidth = 100f;
+        private const float ActionHeight = 32f;
+        private const float ActionGap = 4f;
+        private const float ActionBarHeight = ActionHeight * 4f + ActionGap * 3f;
         private static readonly ChestPriority[] Priorities = (ChestPriority[])System.Enum.GetValues(typeof(ChestPriority));
 
         private static InventoryGui _gui;
         private static Button _focusButton;
         private static Button _sortButton;
+        private static Button _areaSortButton;
+        private static Button _quickSortButton;
+        private static RectTransform _actionBar;
+        private static RectTransform _weightPanel;
         private static GameObject _panel;
         private static Button _priorityButton;
         private static TextMeshProUGUI _pageLabel;
@@ -84,7 +93,8 @@ namespace VariaChestFocus.Gui
                 return;
             }
 
-            if (_built && _builtLayoutVersion == LayoutVersion && _focusButton != null && _sortButton != null && _panel != null)
+            if (_built && _builtLayoutVersion == LayoutVersion && _actionBar != null
+                && _focusButton != null && _sortButton != null && _areaSortButton != null && _quickSortButton != null && _panel != null)
             {
                 return;
             }
@@ -93,6 +103,7 @@ namespace VariaChestFocus.Gui
             DestroyNamed(gui.m_container, ButtonName);
             DestroyNamed(gui.m_container, SortButtonName);
             DestroyNamed(gui.m_container, LegacyButtonName);
+            DestroyNamed(gui.m_container, ActionBarName);
             Transform stackParent = gui.m_stackAllButton != null ? gui.m_stackAllButton.transform.parent : null;
             DestroyNamed(stackParent, ButtonName);
             DestroyNamed(stackParent, SortButtonName);
@@ -101,13 +112,17 @@ namespace VariaChestFocus.Gui
             DestroyNamed(gui.m_crafting, PanelName);
             _focusButton = null;
             _sortButton = null;
+            _areaSortButton = null;
+            _quickSortButton = null;
+            _actionBar = null;
+            _weightPanel = null;
             _panel = null;
             _built = false;
 
-            BuildSettingsButton(gui);
-            BuildSortButton();
+            BuildActionBar(gui);
             BuildPanel(gui);
-            _built = _focusButton != null && _sortButton != null && _panel != null;
+            _built = _actionBar != null && _focusButton != null && _sortButton != null
+                && _areaSortButton != null && _quickSortButton != null && _panel != null;
             _builtLayoutVersion = _built ? LayoutVersion : 0;
             SetButtonVisible(false);
             if (_panel != null)
@@ -126,14 +141,15 @@ namespace VariaChestFocus.Gui
             }
 
             Container container = gui != null ? gui.m_currentContainer : null;
-            bool show = container != null && container.m_rootObjectOverride == null && VariaChestFocusPlugin.IsModEnabled;
+            bool show = InventoryGui.IsVisible() && container != null && container.m_rootObjectOverride == null
+                && container.GetComponent<TombStone>() == null && VariaChestFocusPlugin.IsModEnabled;
             SetButtonVisible(show);
-            if (_sortButton != null)
-            {
-                _sortButton.interactable = show && gui.m_dragItem == null
-                    && (_panel == null || !_panel.activeSelf)
-                    && ContainerAccess.CanModify(Player.m_localPlayer, container, allowInUse: true);
-            }
+            if (show) FitActionBar(gui);
+            bool canSort = show && CanUseActions();
+            if (_sortButton != null) _sortButton.interactable = canSort;
+            if (_areaSortButton != null) _areaSortButton.interactable = canSort;
+            if (_quickSortButton != null) _quickSortButton.interactable = canSort;
+            if (_focusButton != null) _focusButton.interactable = show && CanUseActions(allowSettings: true);
 
             if (!show)
             {
@@ -181,10 +197,10 @@ namespace VariaChestFocus.Gui
         internal static void Destroy()
         {
             HidePanel(persist: false);
-            if (_focusButton != null) { _focusButton.gameObject.SetActive(false); Object.Destroy(_focusButton.gameObject); }
-            if (_sortButton != null) { _sortButton.gameObject.SetActive(false); Object.Destroy(_sortButton.gameObject); }
+            if (_actionBar != null) { _actionBar.gameObject.SetActive(false); Object.Destroy(_actionBar.gameObject); }
             if (_panel != null) { _panel.SetActive(false); Object.Destroy(_panel); }
             _gui = null; _focusButton = null; _sortButton = null; _panel = null; _priorityButton = null;
+            _actionBar = null; _weightPanel = null; _areaSortButton = null; _quickSortButton = null;
             _pageLabel = null; _search = null; _colorLabel = null; _colorPicker = null;
             _customColorButton = null; _categoryRoot = null; _itemRoot = null; _summary = null;
             _emptyLabel = null; _previousPage = null; _nextPage = null; _clearDialog = null;
@@ -212,116 +228,109 @@ namespace VariaChestFocus.Gui
 
         private static void SetButtonVisible(bool visible)
         {
-            if (_focusButton != null)
-            {
-                _focusButton.gameObject.SetActive(visible);
-            }
-            if (_sortButton != null) _sortButton.gameObject.SetActive(visible);
+            if (_actionBar != null) _actionBar.gameObject.SetActive(visible);
         }
 
-        private static void BuildSortButton()
+        private static void BuildActionBar(InventoryGui gui)
         {
-            if (_focusButton == null) return;
-            RectTransform focus = (RectTransform)_focusButton.transform;
-            _sortButton = UiFactory.CloneButton(SortButtonName, focus.parent, "Sort",
-                new Vector2(52f, focus.sizeDelta.y), SortOpenContainer);
-            if (_sortButton == null) return;
-            RectTransform rt = (RectTransform)_sortButton.transform;
-            rt.anchorMin = focus.anchorMin;
-            rt.anchorMax = focus.anchorMax;
-            rt.pivot = focus.pivot;
-            rt.anchoredPosition = focus.anchoredPosition - new Vector2(focus.sizeDelta.x + 6f, 0f);
-            TMP_Text label = _sortButton.GetComponentInChildren<TMP_Text>(true);
-            if (label != null) label.fontSize = 14f;
-            UITooltip tooltip = UiFactory.AddTooltip(_sortButton.gameObject);
-            if (tooltip != null)
+            if (gui.m_container == null) return;
+            _weightPanel = gui.m_containerWeight != null ? gui.m_containerWeight.transform.parent as RectTransform : null;
+            _actionBar = UiFactory.CreateRect(ActionBarName, gui.m_container);
+            _actionBar.anchorMin = _actionBar.anchorMax = new Vector2(1f, 0f);
+            _actionBar.pivot = Vector2.zero;
+            _actionBar.sizeDelta = new Vector2(ActionWidth, ActionBarHeight);
+            // Match the weight indicator's draw order so the inventory frame covers
+            // the buttons' attached left edge, while the exposed portion stays clickable.
+            Transform background = gui.m_container.Find("Bkg");
+            if (_weightPanel != null && _weightPanel.parent == gui.m_container)
+                _actionBar.SetSiblingIndex(_weightPanel.GetSiblingIndex());
+            else if (background != null)
+                _actionBar.SetSiblingIndex(background.GetSiblingIndex());
+            else
+                _actionBar.SetAsFirstSibling();
+            Image weight = _weightPanel != null ? _weightPanel.GetComponent<Image>() : null;
+            _sortButton = BuildActionButton(SortButtonName, "Sort", 0, weight, SortOpenContainer,
+                "Arrange this chest by item type, then name. Keeps every stack in this chest.");
+            _focusButton = BuildActionButton(ButtonName, "Settings", 1, weight, TogglePanel,
+                "Choose this chest's filters, priority and color.");
+            _areaSortButton = BuildActionButton("VariaChestFocus_AreaSort", "Area sort", 2, weight,
+                () => SortNearby(sortChests: true),
+                "Redistribute items between nearby chests, including this one, using filters and priority. Leaves player inventory untouched.");
+            _quickSortButton = BuildActionButton("VariaChestFocus_QuickSort", "Quick sort", 3, weight,
+                () => SortNearby(sortChests: false),
+                "Store player inventory in nearby chests, including this one. Respects filters, priority, hotbar and item protections.");
+            FitActionBar(gui);
+        }
+
+        private static Button BuildActionButton(string name, string label, int row, Image weight,
+            UnityEngine.Events.UnityAction action, string description)
+        {
+            Button button = UiFactory.CloneWeightButton(name, _actionBar, label,
+                new Vector2(ActionWidth, ActionHeight), weight, action);
+            if (button == null) return null;
+            RectTransform rt = (RectTransform)button.transform;
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(0f, -row * (ActionHeight + ActionGap));
+            UITooltip tooltip = UiFactory.AddTooltip(button.gameObject);
+            if (tooltip != null) tooltip.m_text = description;
+            return button;
+        }
+
+        private static void FitActionBar(InventoryGui gui)
+        {
+            if (_actionBar == null || gui == null || gui.m_container == null) return;
+            // Follow the live weight widget, including its protruding icon, so UI scaling
+            // and container-size mods cannot leave the buttons over the header or grid.
+            // Sit flush against the inventory edge; the weight widget only sets the height.
+            float left = 0f;
+            float bottom = 114f;
+            if (_weightPanel != null)
             {
-                tooltip.m_topic = "Sort container";
-                tooltip.m_text = "Arrange this chest by item type, then name. Keeps every stack in this chest.";
+                Bounds weight = RectTransformUtility.CalculateRelativeRectTransformBounds(gui.m_container, _weightPanel);
+                bottom = weight.max.y - gui.m_container.rect.yMin + 8f;
             }
+            // Very short custom containers have no room above the weight. Keep full-size
+            // labels in a neighboring column instead of overlapping it or the player grid.
+            if (bottom + ActionBarHeight > gui.m_container.rect.height - 50f)
+            {
+                if (_weightPanel != null)
+                {
+                    Bounds weight = RectTransformUtility.CalculateRelativeRectTransformBounds(gui.m_container, _weightPanel);
+                    left = Mathf.Max(left, weight.max.x - gui.m_container.rect.xMax + 8f);
+                }
+                bottom = Mathf.Max(0f, gui.m_container.rect.height - 50f - ActionBarHeight);
+            }
+            _actionBar.anchoredPosition = new Vector2(left, bottom);
+        }
+
+        private static bool CanUseActions(bool allowSettings = false)
+        {
+            return _gui != null && InventoryGui.IsVisible() && VariaChestFocusPlugin.IsModEnabled
+                && _gui.m_dragItem == null && (_gui.m_splitDialog == null || !_gui.m_splitDialog.IsActive)
+                && (allowSettings || _panel == null || !_panel.activeSelf)
+                && !Console.IsVisible() && (Chat.instance == null || !Chat.instance.HasFocus())
+                && !Minimap.IsOpen() && !Menu.IsVisible() && !StoreGui.IsVisible()
+                && ContainerAccess.CanModify(Player.m_localPlayer, _gui.m_currentContainer, allowInUse: true);
         }
 
         private static void SortOpenContainer()
         {
-            if (_gui == null || !InventoryGui.IsVisible() || _gui.m_dragItem != null
-                || (_panel != null && _panel.activeSelf)) return;
+            if (!CanUseActions()) return;
             Player player = Player.m_localPlayer;
-            if (player == null) return;
             bool sorted = ContainerSort.Run(player, _gui.m_currentContainer);
             player.Message(MessageHud.MessageType.TopLeft,
                 sorted ? "Chest Focus: container sorted" : "Chest Focus: cannot sort this container right now");
         }
 
-        private static void BuildSettingsButton(InventoryGui gui)
+        private static void SortNearby(bool sortChests)
         {
-            Button template = gui.m_stackAllButton ?? gui.m_takeAllButton;
-            if (template == null)
-            {
-                return;
-            }
-
-            Transform parent = template.transform.parent;
-            // Compact icon button — full "Settings" label overlaps the CHEST header.
-            float height = 30f;
-            if (template.transform is RectTransform srcSize)
-            {
-                height = Mathf.Max(28f, srcSize.sizeDelta.y);
-            }
-
-            Vector2 iconSize = new Vector2(height, height);
-            _focusButton = UiFactory.CloneButton(ButtonName, parent, string.Empty, iconSize, TogglePanel);
-            if (_focusButton == null)
-            {
-                return;
-            }
-
-            RectTransform src = template.transform as RectTransform;
-            RectTransform rt = _focusButton.transform as RectTransform;
-            if (src == null || rt == null)
-            {
-                return;
-            }
-
-            TMP_Text label = _focusButton.GetComponentInChildren<TMP_Text>(true);
-            if (label != null)
-            {
-                label.gameObject.SetActive(false);
-            }
-
-            Sprite icon = ModIcon.GetSprite();
-            if (icon != null)
-            {
-                RectTransform iconRt = UiFactory.CreateRect("Icon", rt);
-                iconRt.anchorMin = new Vector2(0.5f, 0.5f);
-                iconRt.anchorMax = new Vector2(0.5f, 0.5f);
-                iconRt.pivot = new Vector2(0.5f, 0.5f);
-                iconRt.sizeDelta = new Vector2(height - 8f, height - 8f);
-                Image img = iconRt.gameObject.AddComponent<Image>();
-                img.sprite = icon;
-                img.preserveAspect = true;
-                img.raycastTarget = false;
-                img.color = Color.white;
-            }
-            else if (label != null)
-            {
-                label.gameObject.SetActive(true);
-                label.text = "CF";
-            }
-
-            rt.anchorMin = src.anchorMin;
-            rt.anchorMax = src.anchorMax;
-            // Right-center pivot: place our right edge just left of Place stacks' left edge.
-            rt.pivot = new Vector2(1f, src.pivot.y);
-            rt.sizeDelta = iconSize;
-            float stackLeft = src.anchoredPosition.x - (src.pivot.x * src.sizeDelta.x);
-            const float gap = 16f;
-            rt.anchoredPosition = new Vector2(stackLeft - gap, src.anchoredPosition.y);
-            rt.SetAsLastSibling();
+            if (!CanUseActions()) return;
+            VariaChestFocusPlugin.RunQuickSort(sortChests, _gui.m_currentContainer);
         }
 
         private static void TogglePanel()
         {
-            if (_panel == null || _gui == null)
+            if (_panel == null || !CanUseActions(allowSettings: true))
             {
                 return;
             }
@@ -830,6 +839,7 @@ namespace VariaChestFocus.Gui
             Transform existing = parent.Find(name);
             if (existing != null)
             {
+                existing.gameObject.SetActive(false);
                 Object.Destroy(existing.gameObject);
             }
         }

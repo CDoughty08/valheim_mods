@@ -2,7 +2,7 @@ namespace VariaChestFocus
 {
     internal static class ContainerAccess
     {
-        // Only the open-container button may edit a container marked in use by this client.
+        // Only UI actions on this client's current container may bypass the in-use check.
         internal static bool CanModify(Player player, Container container, bool allowInUse = false)
         {
             return player != null && container != null

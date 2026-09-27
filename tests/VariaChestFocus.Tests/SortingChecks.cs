@@ -100,6 +100,71 @@ internal static class SortingChecks
             Assert(QuickSort.RunChests(player, Config()) == 0);
         });
 
+        check("area-sort buttons include only the current open chest and retain its live inventory", () => {
+            foreach (bool openSource in new[] { true, false })
+            {
+                using var storage = new Storage();
+                var source = storage.Add(); var dest = storage.Add("Wood");
+                var occupied = storage.Add("Wood", ChestPriority.Critical);
+                occupied.InUse = true; occupied.m_inventory.Items.Add(Item("Wood", 11));
+                source.m_inventory.Items.Add(Item("Wood", 8));
+                var open = openSource ? source : dest; open.InUse = true;
+                var liveInventory = open.m_inventory;
+                var player = new Player(); var carried = Item("Wood", 12); player.Inventory.Items.Add(carried);
+                Assert(QuickSort.RunChests(player, Config()) == 0, "Hotkeys still skip occupied chests");
+                int openLoads = open.Loads;
+                Assert(QuickSort.RunChests(player, Config(), open) == 1);
+                Assert(Total(source) == 0 && Total(dest) == 8 && Total(occupied) == 11);
+                Assert(open.Loads == openLoads && open.m_inventory == liveInventory);
+                Assert(occupied.Saves == 0 && occupied.Loads == 0);
+                Assert(source.Saves == 1 && dest.Saves == 1 && source.SavedTotal == 0 && dest.SavedTotal == 8);
+                Assert(player.Inventory.Items.Single() == carried && carried.m_stack == 12);
+            }
+        });
+
+        check("an open chest still requires access and ownership and obeys exclusions and caps", () => {
+            foreach (bool openSource in new[] { true, false })
+            {
+                using var storage = new Storage();
+                var source = storage.Add(); var dest = storage.Add("Wood");
+                source.m_inventory.Items.Add(Item("Wood", 3));
+                var open = openSource ? source : dest; open.InUse = true;
+                void Blocked(ChestFocusConfigSnapshot cfg)
+                {
+                    Assert(QuickSort.RunChests(new Player(), cfg, open) == 0);
+                    Assert(Total(source) == 3 && Total(dest) == 0 && source.Saves == 0 && dest.Saves == 0);
+                    Assert(open.Loads == 0);
+                }
+                open.Accessible = false; Blocked(Config()); open.Accessible = true;
+                open.m_nview.Owner = false; Blocked(Config()); open.m_nview.Owner = true;
+                open.m_nview.Valid = false; Blocked(Config()); open.m_nview.Valid = true;
+                open.m_loading = true; Blocked(Config()); open.m_loading = false;
+                open.Grave = new TombStone(); Blocked(Config()); open.Grave = null;
+                open.m_rootObjectOverride = new object(); Blocked(Config()); open.m_rootObjectOverride = null;
+                open.transform.position = new Vector3 { x = 17 }; Blocked(Config()); open.transform.position = new Vector3();
+                open.m_checkGuardStone = true; PrivateArea.Allowed = false;
+                try { Blocked(Config()); } finally { PrivateArea.Allowed = true; open.m_checkGuardStone = false; }
+                var settings = ChestSettingsStore.Get(open).Clone();
+                settings.Priority = ChestPriority.Never; ChestSettingsStore.TrySet(open, settings); Blocked(Config());
+                settings.Priority = ChestPriority.Medium; ChestSettingsStore.TrySet(open, settings);
+                var cfg = Config(); cfg.Enabled = false; Blocked(cfg);
+                cfg = Config(); cfg.MaxChests = 1; Blocked(cfg);
+                Assert(QuickSort.RunChests(new Player(), Config(), open) == 1 && open.Loads == 0);
+            }
+        });
+
+        check("area-sort move limits save partial work in the current open chest", () => {
+            using var storage = new Storage();
+            var source = storage.Add(); source.InUse = true;
+            var dest = storage.Add("Wood", capacity: 5);
+            var overflow = storage.Add("Wood", distance: 1);
+            source.m_inventory.Items.Add(Item("Wood", 10));
+            Assert(QuickSort.RunChests(new Player(), Config(1), source) == 1);
+            Assert(Total(source) == 5 && Total(dest) == 5 && Total(overflow) == 0 && source.Loads == 0);
+            Assert(source.Saves == 1 && dest.Saves == 1 && source.SavedTotal == 5);
+            Assert(QuickSort.RunChests(new Player(), Config(), source) == 1 && Total(overflow) == 5);
+        });
+
         check("chest sorting uses priority then distance with partial overflow and conservation", () => {
             using var storage = new Storage();
             var source = storage.Add("Wood", ChestPriority.Low);

@@ -9,7 +9,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>VariaWeight</AssemblyName>
     <RootNamespace>VariaWeight</RootNamespace>
-    <Version>0.0.6</Version>
+    <Version>0.0.7</Version>
     <VariaModName>VariaWeight</VariaModName>
     <VariaIcon>$(MSBuildProjectDirectory)\..\assets\weightlifting_icon_256.png</VariaIcon>
     <VariaPackageFolder>$(VariaAuthor)-$(VariaModName)</VariaPackageFolder>
